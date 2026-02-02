@@ -72,6 +72,7 @@ marker나 docling 모두 구조적 정보 개선에 이용하는 커스텀 모�
 
 > [!summary] **정리**
 > 1. mathpix같은 api 이용(marker나 docling엔 없으니 이걸 이용해 보는 방법)
-> 2. marker의 ocr 모델 surya(https://github.com/datalab-to/surya/tree/master)를 파인튜닝 해 보거나
+> 2. marker의 ocr 모델 surya(https://github.com/datalab-to/surya/tree/master) 를 파인튜닝 해 보거나
+> 3. pdf parser를 개선... (개선할 수 있을까..?)
 > 
 > 이 정도가 당장 떠오르는 개선 방안
