@@ -131,6 +131,5 @@ PDF를 수정하면 파일 뒷부분에 새로운 `xref` 테이블이 추가�
 
 ## 참고 자료
 [참고 블로그](https://tmxhsk99.tistory.com/221)
-
-
+<br>
 [PDF Theory of Operation](https://skia.org/docs/dev/design/pdftheory/)
