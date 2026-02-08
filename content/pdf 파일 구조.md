@@ -9,7 +9,6 @@ draft: false
 - **Xref Table (Cross-reference Table)**: 파일 내<mark style="background:#d4b106"> 각 객체들이 어느 위치(바이트 오프셋)에 있는지 기록</mark>한 인덱스. 라이브러리가 특정 페이지나 이미지를 즉시 찾을 수 있게 해준다.
 - **Trailer**: <mark style="background:#d4b106">파일의 끝을 알리며, Xref Table의 시작 위치와 파일의 루트 객체(Catalog)를 가리킨다</mark>.
 
-asdfasdf
 ## pdf 파일 구조 이미지
 <p align="center"> <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdna%2FbwzPiJ%2FbtrFFnByVH4%2FAAAAAAAAAAAAAAAAAAAAAH2Lc1gxbllFcU-3wx_DNrQRnG1dTL2W-ppGks9ttCbe%2Fimg.png%3Fcredential%3DyqXZFxpELC7KVnFOS48ylbz2pIh7yKj8%26expires%3D1772290799%26allow_ip%3D%26allow_referer%3D%26signature%3D9HEoY%252FxSKGnfxSTBTgeC1gqjsts%253D" width="200"> </p>
 <p align="center"> <img src="https://skia.org/docs/dev/design/PdfLogicalDocumentStructure.png" width="400"> </p>
