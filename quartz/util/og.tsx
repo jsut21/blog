@@ -14,7 +14,11 @@ import { styleText } from "util"
 const defaultHeaderWeight = [700]
 const defaultBodyWeight = [400]
 
-export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: FontSpecification) {
+export async function getSatoriFonts(
+  headerFont: FontSpecification,
+  bodyFont: FontSpecification,
+  locale?: string,
+) {
   // Get all weights for header and body fonts
   const headerWeights: FontWeight[] = (
     typeof headerFont === "string"
@@ -62,6 +66,23 @@ export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: Fo
     ...bodyFonts.filter((font): font is NonNullable<typeof font> => font !== null),
   ]
 
+  if (locale?.startsWith("ko")) {
+    const koFontName = "Noto Sans KR"
+    const koFontPromises = [400, 700].map(async (weight) => {
+      const data = await fetchTtf(koFontName, weight as FontWeight, "korean")
+      if (!data) return null
+      return {
+        name: koFontName,
+        data,
+        weight: weight as FontWeight,
+        style: "normal" as const,
+      }
+    })
+
+    const koFonts = await Promise.all(koFontPromises)
+    fonts.push(...koFonts.filter((font): font is NonNullable<typeof font> => font !== null))
+  }
+
   return fonts
 }
 
@@ -69,14 +90,16 @@ export async function getSatoriFonts(headerFont: FontSpecification, bodyFont: Fo
  * Get the `.ttf` file of a google font
  * @param fontName name of google font
  * @param weight what font weight to fetch font
+ * @param subset font subset to fetch
  * @returns `.ttf` file of google font
  */
 export async function fetchTtf(
   rawFontName: string,
   weight: FontWeight,
+  subset?: string,
 ): Promise<Buffer<ArrayBufferLike> | undefined> {
   const fontName = rawFontName.replaceAll(" ", "+")
-  const cacheKey = `${fontName}-${weight}`
+  const cacheKey = `${fontName}-${weight}${subset ? `-${subset}` : ""}`
   const cacheDir = path.join(QUARTZ, ".quartz-cache", "fonts")
   const cachePath = path.join(cacheDir, cacheKey)
 
@@ -89,9 +112,11 @@ export async function fetchTtf(
   }
 
   // Get css file from google fonts
-  const cssResponse = await fetch(
-    `https://fonts.googleapis.com/css2?family=${fontName}:wght@${weight}`,
-  )
+  const url = subset
+    ? `https://fonts.googleapis.com/css?family=${fontName}:${weight}&subset=${subset}`
+    : `https://fonts.googleapis.com/css2?family=${fontName}:wght@${weight}`
+
+  const cssResponse = await fetch(url)
   const css = await cssResponse.text()
 
   // Extract .ttf url from css file

@@ -113,7 +113,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       const cfg = ctx.cfg.configuration
       const headerFont = cfg.theme.typography.header
       const bodyFont = cfg.theme.typography.body
-      const fonts = await getSatoriFonts(headerFont, bodyFont)
+      const fonts = await getSatoriFonts(headerFont, bodyFont, cfg.locale)
 
       for (const [_tree, vfile] of content) {
         if (vfile.data.frontmatter?.socialImage !== undefined) continue
@@ -124,7 +124,7 @@ export const CustomOgImages: QuartzEmitterPlugin<Partial<SocialImageOptions>> = 
       const cfg = ctx.cfg.configuration
       const headerFont = cfg.theme.typography.header
       const bodyFont = cfg.theme.typography.body
-      const fonts = await getSatoriFonts(headerFont, bodyFont)
+      const fonts = await getSatoriFonts(headerFont, bodyFont, cfg.locale)
 
       // find all slugs that changed or were added
       for (const changeEvent of changeEvents) {
