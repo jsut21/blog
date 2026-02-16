@@ -1,3 +1,183 @@
 @use "./base.scss";
+@use "./variables.scss" as *;
 
-// put your custom CSS here!
+// Cornell Note Layout - Final Production Version
+article.cornell {
+  // 0. Configuration & Variables
+  --cornell-cue-width: 170px;
+  --cornell-gap: 30px;
+  --cornell-main-line: var(--gray);
+  --baseline: 2.2rem; // Base unit for vertical rhythm
+  
+  --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 60%);
+  --cornell-vertical-line: color-mix(in srgb, var(--gray), transparent 85%);
+
+  display: flow-root;
+  position: relative;
+  margin-top: 1.5rem;
+  
+  // 1. Desktop Layout (801px+)
+  @media all and (min-width: 801px) {
+    padding-left: calc(var(--cornell-cue-width) + var(--cornell-gap));
+    
+    // Perfect Vertical Rhythm
+    background-image: linear-gradient(var(--cornell-paper-line) 1px, transparent 1px);
+    background-size: 100% var(--baseline);
+    background-position: 0 1.2rem;
+    line-height: var(--baseline) !important;
+
+    // Reset margins for all children to maintain baseline alignment
+    & > p, & > ul, & > ol, & > blockquote, & > table, & > pre {
+      margin-top: 0 !important;
+      margin-bottom: var(--baseline) !important;
+    }
+
+    // Vertical line separator
+    &::before {
+      content: "";
+      position: absolute;
+      top: -2.5rem; bottom: 0;
+      left: var(--cornell-cue-width);
+      width: 1px;
+      background-color: var(--cornell-vertical-line);
+      z-index: 0;
+    }
+
+    @media all and (max-width: 1200px) {
+      --cornell-cue-width: 140px;
+      --cornell-gap: 20px;
+    }
+    
+    table, pre, .katex-display {
+      max-width: 100%;
+      overflow-x: auto;
+      display: block;
+    }
+  }
+
+  // 2. Mobile Layout
+  @media all and ($mobile) {
+    padding-left: 0;
+    padding-top: 1rem;
+    margin-top: 0;
+    background-image: none !important;
+    line-height: 1.6rem !important;
+    position: static !important;
+    z-index: auto !important;
+    
+    &::before { display: none !important; }
+    & > * { 
+      position: relative; 
+      z-index: auto !important;
+      margin-bottom: 1.2rem !important;
+    }
+  }
+
+  // 3. Cue Callouts
+  & > .callout[data-callout="cue"] {
+    position: relative;
+    background: var(--light) !important;
+    line-height: 1.4 !important;
+    
+    @media all and (min-width: 801px) {
+      float: left;
+      clear: left;
+      width: var(--cornell-cue-width);
+      margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+      border: none !important;
+      padding: 0 5px !important;
+      margin-bottom: 1rem !important; // Desktop spacing
+      z-index: 2;
+      box-shadow: none !important;
+      & > .callout-title .callout-icon { display: none !important; }
+    }
+    
+    @media all and ($mobile) {
+      margin: 1.5rem 0 !important;
+      border: none !important;
+      border-left: 4px solid var(--secondary) !important;
+      padding: 0.5rem 1rem !important;
+      background: var(--code-bg) !important;
+      border-radius: 0 4px 4px 0 !important;
+    }
+
+    & > .callout-title {
+      background: none !important;
+      color: var(--secondary);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      padding: 0 !important;
+    }
+  }
+
+  // 4. Summary Callout
+  & > .callout[data-callout="summary"] {
+    clear: both;
+    margin-top: calc(var(--baseline) * 2);
+    padding: 1.5rem !important;
+    background: var(--light) !important; 
+    line-height: 1.6 !important;
+    border: 1px solid var(--cornell-main-line) !important;
+    border-radius: 4px !important;
+    box-shadow: 4px 4px 0px color-mix(in srgb, var(--cornell-main-line), transparent 80%) !important;
+    
+    @media all and (min-width: 801px) {
+      margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+      width: calc(100% + var(--cornell-cue-width) + var(--cornell-gap));
+    }
+
+    @media all and ($mobile) {
+      margin: 2rem 0 !important;
+      box-shadow: none !important;
+      background: var(--lightgray) !important;
+      opacity: 0.9;
+      & > .callout-title {
+        justify-content: center;
+        border-bottom: 1px solid var(--gray);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem !important;
+      }
+    }
+  }
+}
+
+// 5. Header Design
+.center:has(> article.cornell) {
+  .article-title {
+    border-bottom: 2px solid var(--gray);
+    padding-bottom: 0.5rem;
+    display: flex;
+    align-items: baseline;
+    
+    &::before {
+      content: "SUBJECT:";
+      font-size: 0.7rem; font-weight: 800; color: var(--gray);
+      margin-right: 1rem; opacity: 0.5; flex-shrink: 0;
+    }
+  }
+}
+
+.page:has(article.cornell) {
+  @media all and (min-width: 801px) and (max-width: 1200px) {
+    .right { display: none !important; }
+    .center { grid-column: 2 / span 2 !important; }
+  }
+}
+
+// 6. Print Optimization
+@media print {
+  article.cornell {
+    background-image: linear-gradient(#eee 1px, transparent 1px) !important;
+    background-size: 100% var(--baseline) !important;
+    padding-left: 180px !important;
+    &::before { left: 170px !important; background-color: #ccc !important; opacity: 1 !important; }
+    & > .callout[data-callout="cue"] { width: 160px !important; margin-left: -180px !important; }
+    & > .callout[data-callout="summary"] { margin-left: -180px !important; width: 100% !important; }
+  }
+  .sidebar, .backlinks, .graph, nav { display: none !important; }
+}
+
+// Global Callout Overrides for Cornell
+.callout[data-callout="cue"] { --color: #00b8d4; --border: #00b8d444; --bg: #00b8d410; }
+.callout[data-callout="summary"] { --color: #00b0ff; --border: #00b0ff44; --bg: #00b0ff10; }

@@ -63,7 +63,6 @@ const defaultOptions: Options = {
 const calloutMapping = {
   note: "note",
   abstract: "abstract",
-  summary: "abstract",
   tldr: "abstract",
   info: "info",
   todo: "todo",
@@ -73,7 +72,6 @@ const calloutMapping = {
   success: "success",
   check: "success",
   done: "success",
-  question: "question",
   help: "question",
   faq: "question",
   warning: "warning",
@@ -88,6 +86,14 @@ const calloutMapping = {
   example: "example",
   quote: "quote",
   cite: "quote",
+  cue: "cue",
+  q: "cue",
+  k: "cue",
+  question: "cue",
+  keyword: "cue",
+  term: "cue",
+  summary: "summary",
+  reflection: "summary",
 } as const
 
 const arrowMapping: Record<string, string> = {
