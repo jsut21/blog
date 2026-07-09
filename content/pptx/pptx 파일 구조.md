@@ -2,6 +2,7 @@
 created: 2026-02-14
 draft: false
 commit: true
+publish: true
 ---
 # pptx 파일 구조
 

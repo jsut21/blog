@@ -30,7 +30,8 @@ Quartz는 `content/` 폴더 안의 Markdown 파일을 읽어서 디지털 가든
 | 내부 링크 크롤링 | 켜짐 | `Plugin.CrawlLinks()` |
 | 설명 자동 생성 | 켜짐 | `Plugin.Description()` |
 | LaTeX 수식 | 켜짐 | `Plugin.Latex()` |
-| draft 필터링 | 켜짐 | `Plugin.RemoveDrafts()` |
+| 명시적 공개 필터 | 켜짐 | `quartz-community/explicit-publish` + `publish: true` |
+| draft 필터링 | 켜짐 | `quartz-community/remove-draft` |
 | 폴더 페이지 | 켜짐 | `Plugin.FolderPage()` |
 | 태그 페이지 | 켜짐 | `Plugin.TagPage()` |
 | 검색/그래프/RSS용 색인 | 켜짐 | `Plugin.ContentIndex()` |
@@ -64,6 +65,8 @@ description: 검색 결과와 링크 미리보기에 쓸 설명
 created: 2026-07-07
 modified: 2026-07-07
 draft: false
+publish: false
+commit: false
 tags:
   - topic/quartz
   - status/growing
@@ -83,6 +86,8 @@ enableToc: true
 | `created`           | 생성일. 현재 설정에서 날짜 우선순위가 frontmatter를 먼저 본다. |
 | `modified`          | 수정일. Obsidian 플러그인으로 자동 갱신 가능하다.          |
 | `draft`             | `true`면 빌드 결과에서 제외된다.                     |
+| `publish`           | `true`면 현재 v5 설정에서 사이트에 공개된다.              |
+| `commit`            | `true`면 로컬 staging helper의 Git staging 대상이 된다. |
 | `tags`              | 태그 페이지와 검색에서 사용된다.                        |
 | `aliases`           | 다른 URL/이름에서 이 노트로 redirect를 만들 수 있다.      |
 | `permalink`         | 파일 경로가 바뀌어도 유지할 고정 URL.                   |
@@ -363,9 +368,17 @@ enableToc: false
 
 ## 발행/공유 기능
 
-### Draft
+### Publish와 Draft
 
-현재 설정에서는 `draft: true`인 글이 빌드 결과에서 제외된다.
+현재 v5 설정은 opt-in 공개 방식이다. `publish: true`가 있는 Markdown 글만 빌드 결과에 포함된다.
+
+```md
+---
+publish: true
+---
+```
+
+`draft: true`는 추가적인 제외 플래그다. 실수로 `publish: true`가 있더라도 `draft: true`인 글은 공개하지 않는 용도로 쓴다.
 
 ```md
 ---
@@ -373,16 +386,21 @@ draft: true
 ---
 ```
 
-주의: Markdown 페이지만 제외된다. 이미지, PDF 같은 비 Markdown 파일은 별도로 공개될 수 있으므로 민감한 파일은 `content/`에 두지 않는 것이 안전하다.
+`commit: true`는 Git staging helper용이다. Quartz 공개 여부를 결정하지 않는다.
+
+주의: Markdown 페이지만 필터링된다. 이미지, PDF 같은 비 Markdown 파일은 별도로 공개될 수 있으므로 민감한 파일은 `content/`에 두지 않는 것이 안전하다.
 
 ### Ignore patterns
 
-`quartz.config.ts`의 `ignorePatterns`로 아예 처리하지 않을 경로를 지정할 수 있다.
+`quartz.config.yaml`의 `ignorePatterns`로 아예 처리하지 않을 경로를 지정할 수 있다.
 
 현재 설정:
 
-```ts
-ignorePatterns: ["private", "templates", ".obsidian"]
+```yaml
+ignorePatterns:
+  - private
+  - templates
+  - .obsidian
 ```
 
 즉 `private`, `templates`, `.obsidian`은 Quartz 처리 대상에서 제외된다.
@@ -397,8 +415,8 @@ https://lis-blog.pages.dev/index.xml
 
 RSS를 제대로 쓰려면 `baseUrl`이 현재처럼 정확히 설정되어 있어야 한다.
 
-```ts
-baseUrl: "lis-blog.pages.dev"
+```yaml
+baseUrl: lis-blog.pages.dev
 ```
 
 ### Sitemap
@@ -477,7 +495,7 @@ BibTeX 기반 인용을 지원하는 플러그인이 있지만 현재 설정에�
 
 ### Explicit publish
 
-현재는 `draft: true`만 제외하는 방식이다. 반대로 `publish: true`가 있는 글만 공개하는 방식도 가능하다.
+현재 v5 설정에서는 `explicit-publish`가 켜져 있다. 따라서 `publish: true`가 있는 글만 공개된다.
 
 ```md
 ---
@@ -485,7 +503,7 @@ publish: true
 ---
 ```
 
-이 방식을 쓰려면 `RemoveDrafts` 대신 `ExplicitPublish` 필터를 쓰도록 설정을 바꿔야 한다.
+새 노트는 기본적으로 `publish: false`로 두고, 공개할 때만 `publish: true`로 바꾼다.
 
 ## 추천 사용법
 
@@ -495,8 +513,9 @@ publish: true
 ---
 title: 제목
 created: 2026-07-07
-modified: 2026-07-07
 draft: false
+publish: false
+commit: false
 tags:
   - topic/
   - type/concept

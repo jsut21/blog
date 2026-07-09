@@ -6,6 +6,7 @@ tags:
   - note-taking
   - education
 commit: true
+publish: true
 ---
 
 # Introduction to Cornell Notes

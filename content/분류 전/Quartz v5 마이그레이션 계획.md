@@ -57,6 +57,21 @@ upstream Quartz의 현재 기본 브랜치는 `v5`이고, 공식 문서 기준 �
 
 주의: upstream v5의 `npm run install-plugins` script는 이 환경에서 SCSS import 오류가 났다. Quartz CLI 경로는 정상이라 `install-plugins` script를 `./quartz/bootstrap-cli.mjs plugin install`로 바꿨다.
 
+## 공개 필터 수정
+
+처음 v5 migration 직후에는 `remove-draft`만 켜져 있어서 `draft: true`가 아닌 모든 노트가 로컬 사이트에 보였다. 기존 의도는 명시적으로 선택한 글만 공개하는 것이므로 다음처럼 수정했다.
+
+- `quartz-community/explicit-publish` 활성화
+- 기존 공개 대상인 `commit: true` 노트 7개에 `publish: true` 추가
+- 새 노트 템플릿에 `publish: false` 추가
+- `commit: true`는 계속 Git staging helper 전용으로 유지
+
+따라서 현재 기준은 다음과 같다.
+
+- 사이트 공개: `publish: true`
+- 사이트 제외: `publish: true` 없음 또는 `draft: true`
+- Git staging: `commit: true`
+
 ## 먼저 해야 하는 일
 
 바로 v5로 갈아타기 전에, 현재 블로그가 Quartz 기본 설정에서 바꾼 부분을 먼저 재고로 만들어야 한다.

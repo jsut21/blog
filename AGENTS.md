@@ -14,7 +14,7 @@ This repository is an Obsidian vault published with Quartz.
 - Prefer wikilinks for internal notes, for example `[[Some Note]]`.
 - Use frontmatter on Markdown notes.
 - Use only `created` as the default note date. The current Quartz config displays `created`.
-- New notes should default to `commit: false` until the user explicitly marks them for commit.
+- New notes should default to `publish: false` and `commit: false` until the user explicitly marks them for publication or commit.
 
 Recommended frontmatter shape:
 
@@ -23,6 +23,7 @@ Recommended frontmatter shape:
 title: Note title
 created: YYYY-MM-DD
 draft: false
+publish: false
 commit: false
 tags:
   - topic/example
@@ -33,7 +34,8 @@ tags:
 
 - Quartz builds the blog from `content/`.
 - Quartz supports Obsidian wikilinks, callouts, Mermaid diagrams, LaTeX, code highlighting, tags, folder pages, backlinks, graph view, search, and table of contents.
-- Use `draft: true` only to exclude a note from the generated site.
+- Use `publish: true` to include a note in the generated site. Notes without `publish: true` are hidden by `explicit-publish`.
+- Use `draft: true` as an additional hard exclusion from the generated site.
 - Use `commit: true` only to mark a note for the staging helper.
 - Use `comments: false` to disable Giscus comments for a specific page.
 - Use `enableToc: false` to hide the table of contents for a specific page.
@@ -45,7 +47,7 @@ This repo uses frontmatter to decide which notes should be staged for commit.
 
 - `commit: true` means the note is intentionally selected for Git staging by the local helper script.
 - `commit: false` or a missing `commit` field means the note should not be staged by broad content commands.
-- `draft: true` only controls Quartz publication. It does not control Git staging or commits.
+- `publish: true` and `draft: true` only control Quartz publication. They do not control Git staging or commits.
 - Never use broad commands like `git add content`, `git add content/분류 전`, or `git add .` for note commits unless the user explicitly asks for that exact broad scope.
 - Prefer `npm run stage:notes` to preview selected notes and referenced assets.
 - Use `npm run stage:notes:apply` to stage only notes with `commit: true` and their referenced local assets.

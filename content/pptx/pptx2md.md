@@ -2,6 +2,7 @@
 created: 2026-02-17
 draft: false
 commit: true
+publish: true
 ---
 [[pdf2md]]에서와 마찬가지로 pptx2md에서
 

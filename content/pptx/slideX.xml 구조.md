@@ -2,6 +2,7 @@
 created: 2026-02-24
 draft: false
 commit: true
+publish: true
 ---
 # slideX.xml의 핵심 구조 
 `slideX.xml`은 Office Open XML (OOXML)(open office xml과 다르다.) (**ECMA-376** / **[ISO/IEC 29500-1](https://www.iso.org/standard/71691.html)**)의 프레젠테이션(PresentationML) 포맷에서 개별 슬라이드의 시각적 콘텐츠와 설정 정보를 담고 있는 핵심 파트이다. 

@@ -2,6 +2,7 @@
 created: 2026-02-03
 draft: false
 commit: true
+publish: true
 ---
 
 다음 대표적은 오픈소스 PDF to Markdown 변환 도구를 비교해보고,  
