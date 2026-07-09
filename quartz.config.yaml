@@ -12,6 +12,13 @@ configuration:
     - private
     - templates
     - .obsidian
+    - archive
+    - 분류 전
+    - claude code 활용
+    - "**/*.canvas"
+    - "**/*.base"
+    - "**/*.excalidraw"
+    - "**/*.excalidraw.md"
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
@@ -118,7 +125,7 @@ plugins:
   - source: github:quartz-community/cname
     enabled: false
   - source: github:quartz-community/canvas-page
-    enabled: true
+    enabled: false
   - source: github:quartz-community/content-page
     enabled: true
   - source: github:quartz-community/folder-page
@@ -215,7 +222,7 @@ plugins:
       priority: 25
       display: mobile-only
   - source: github:quartz-community/bases-page
-    enabled: true
+    enabled: false
     options: {}
     order: 50
   - source: github:quartz-community/note-properties

@@ -57,6 +57,19 @@ upstream Quartz의 현재 기본 브랜치는 `v5`이고, 공식 문서 기준 �
 
 주의: upstream v5의 `npm run install-plugins` script는 이 환경에서 SCSS import 오류가 났다. Quartz CLI 경로는 정상이라 `install-plugins` script를 `./quartz/bootstrap-cli.mjs plugin install`로 바꿨다.
 
+## 비 Markdown 파일 공개 정책
+
+Quartz v5는 Markdown 외에도 page type plugin으로 `.canvas`, `.base`, Excalidraw 파일을 렌더링할 수 있다. 이 파일들은 Markdown frontmatter의 `publish: true`만으로 통제하기 어렵다.
+
+현재는 안전하게 다음처럼 잠근다.
+
+- `canvas-page` 비활성화
+- `bases-page` 비활성화
+- `.canvas`, `.base`, `.excalidraw`, `.excalidraw.md`를 `ignorePatterns`에 추가
+- WIP 폴더 `archive`, `분류 전`, `claude code 활용`을 Quartz ignore 대상에 추가
+
+이후 canvas/base/excalidraw를 공개하려면 별도의 opt-in 규칙을 만든 뒤 플러그인을 다시 켠다.
+
 ## 공개 필터 수정
 
 처음 v5 migration 직후에는 `remove-draft`만 켜져 있어서 `draft: true`가 아닌 모든 노트가 로컬 사이트에 보였다. 기존 의도는 명시적으로 선택한 글만 공개하는 것이므로 다음처럼 수정했다.

@@ -28,6 +28,9 @@ const assetExtensions = new Set([
   ".mov",
   ".m4a",
   ".pdf",
+  ".canvas",
+  ".base",
+  ".excalidraw",
 ])
 
 function parseArgs(argv) {

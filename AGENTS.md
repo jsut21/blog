@@ -6,6 +6,7 @@ This repository is an Obsidian vault published with Quartz.
 
 - Treat `content/` as the public note source that Quartz builds into the blog.
 - Treat `.obsidian/`, `node_modules/`, `public/`, `.quartz-cache/`, `private/`, and `copilot/` as local/generated/private state. They are ignored by Git.
+- Treat `content/분류 전/`, `content/archive/`, and `content/claude code 활용/` as WIP note areas. Quartz ignores them for publication, though Git may still track files there when explicitly committed.
 - Do not assume every untracked file under `content/` is intended for publication or commit.
 
 ## Writing Notes
@@ -40,6 +41,15 @@ tags:
 - Use `comments: false` to disable Giscus comments for a specific page.
 - Use `enableToc: false` to hide the table of contents for a specific page.
 - Use `description`, `socialDescription`, or `socialImage` when a page needs better previews.
+
+## Publication Policy By File Type
+
+- Markdown notes are published only when they are outside Quartz ignored paths, have `publish: true`, and do not have `draft: true`.
+- `commit: true` is only for Git staging. It does not publish a note.
+- Current Quartz ignored WIP paths include `content/분류 전/`, `content/archive/`, and `content/claude code 활용/`.
+- Non-Markdown page files are not publication-ready in this repo yet. `.canvas`, `.base`, `.excalidraw`, and `.excalidraw.md` are ignored by Quartz until an explicit publish policy exists for them.
+- The `canvas-page` and `bases-page` plugins remain installed by the v5 lockfile but are disabled in `quartz.config.yaml`.
+- Assets under non-ignored `content/` paths can still be copied by Quartz. Keep private or WIP assets in ignored paths or outside `content/`.
 
 ## Commit Selection Policy
 

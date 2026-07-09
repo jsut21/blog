@@ -368,6 +368,21 @@ enableToc: false
 
 ## 발행/공유 기능
 
+### 파일 타입별 공개 정책
+
+현재 블로그는 Markdown만 명시적 공개 대상으로 삼는다.
+
+| 파일 타입 | 현재 공개 정책 | Git staging 정책 |
+|---|---|---|
+| `.md` | `publish: true`가 있고 `draft: true`가 없을 때 공개 | `commit: true`면 staging helper 대상 |
+| 이미지/PDF/영상 asset | non-ignored `content/` 아래에 있으면 Quartz가 복사할 수 있음 | `commit: true` 노트에서 참조하면 staging helper가 함께 포함 |
+| `.canvas` | 현재 Quartz ignore 대상 | 참조 asset이면 staging helper가 감지 가능 |
+| `.base` | 현재 Quartz ignore 대상 | 참조 asset이면 staging helper가 감지 가능 |
+| `.excalidraw`, `.excalidraw.md` | 현재 Quartz ignore 대상 | 별도 정책 없음 |
+
+즉 지금은 `.canvas`, `.base`, Excalidraw 파일을 공개하지 않는다. 나중에 공개하려면 먼저 해당 파일 타입에 대한 opt-in 규칙을 새로 정해야 한다.
+
+
 ### Publish와 Draft
 
 현재 v5 설정은 opt-in 공개 방식이다. `publish: true`가 있는 Markdown 글만 빌드 결과에 포함된다.
@@ -401,6 +416,13 @@ ignorePatterns:
   - private
   - templates
   - .obsidian
+  - archive
+  - 분류 전
+  - claude code 활용
+  - "**/*.canvas"
+  - "**/*.base"
+  - "**/*.excalidraw"
+  - "**/*.excalidraw.md"
 ```
 
 즉 `private`, `templates`, `.obsidian`은 Quartz 처리 대상에서 제외된다.
