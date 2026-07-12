@@ -54,6 +54,19 @@ block ID는 영문, 숫자, 하이픈만 사용한다. 본문과 callout을 원�
 
 `question` 외에도 `cue`, `reflection`, `note` 등 일반 Obsidian callout type을 사용할 수 있다. `summary`는 연결 metadata 없이 글 마지막의 전체 너비 요약으로 사용한다.
 
+## Obsidian 작성 명령
+
+block ID와 callout metadata를 직접 입력하지 않아도 로컬 플러그인의 명령으로 연결 메모를 만들 수 있다.
+
+1. `cornell: true` 문서의 대상 본문 문단이나 목록 항목에 커서를 둔다.
+2. 명령 팔레트에서 `Cornell Anchored Callouts: Cornell 연결 메모 추가`를 실행한다.
+3. `질문 / 답변`, `생각 / 성찰`, `추가 정보`, `단서 / 연관 메모` 중 유형을 고르고 선택적으로 제목을 입력한다.
+4. `추가`를 누르거나 제목 입력란에서 `Enter`를 누른다.
+
+명령은 `cornell-YYYYMMDD-HHmmss` 형식의 고유 block ID를 만들며, 대상에 block ID가 이미 있으면 이를 재사용한다. 연결 callout을 대상 바로 아래에 삽입한 뒤 callout 본문으로 커서를 옮기므로 이어서 질문의 답변이나 생각을 작성하면 된다. 자주 사용한다면 Obsidian 단축키 설정에서 이 명령에 원하는 키를 할당한다.
+
+frontmatter, 제목, 기존 callout, 표, 코드 블록은 연결 대상으로 사용하지 않는다. 이런 위치에서 실행하면 원문을 변경하지 않고 안내 메시지만 표시한다.
+
 ## 블로그 동작
 
 연결된 callout이 있는 본문에는 오른쪽 32px annotation rail에 번호 표시가 추가된다.
