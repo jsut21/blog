@@ -33,6 +33,8 @@ const assetExtensions = new Set([
   ".excalidraw",
 ])
 
+const compoundAssetSuffixes = [".excalidraw.md"]
+
 function parseArgs(argv) {
   const opts = {
     stage: false,
@@ -105,12 +107,17 @@ function relFromContent(abs) {
 function normalizeTarget(target) {
   let value = target.trim()
 
+  if (value.startsWith("[[") && value.endsWith("]]")) {
+    value = value.slice(2, -2).split("|")[0].trim()
+  }
+
   if (value.startsWith("<") && value.endsWith(">")) {
     value = value.slice(1, -1).trim()
   }
 
   value = value.replaceAll("\\", "/")
   value = value.split("#")[0].split("?")[0].trim()
+  value = value.replace(/^content\//, "")
 
   try {
     value = decodeURIComponent(value)
@@ -148,7 +155,9 @@ function isExternalTarget(target) {
 }
 
 function isAssetTarget(target) {
-  const ext = path.extname(target).toLowerCase()
+  const normalized = target.toLowerCase()
+  if (compoundAssetSuffixes.some((suffix) => normalized.endsWith(suffix))) return true
+  const ext = path.extname(normalized)
   return assetExtensions.has(ext)
 }
 
@@ -166,6 +175,9 @@ function frontmatterAssetTargets(data) {
 
   for (const key of keys) {
     collect(data[key])
+  }
+  if (isEnabled(data.publication_control)) {
+    collect(data.target)
   }
 
   return values
@@ -187,6 +199,21 @@ function markdownAssetTargets(content) {
   const htmlImage = /<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi
   for (const match of content.matchAll(htmlImage)) {
     values.push(normalizeTarget(match[1]))
+  }
+
+  return values
+}
+
+function isExcalidrawMarkdown(filePath) {
+  return filePath.toLowerCase().endsWith(".excalidraw.md")
+}
+
+function excalidrawMarkdownAssetTargets(content) {
+  const values = []
+  const wikilink = /\[\[([^\]\n]+)\]\]/g
+
+  for (const match of content.matchAll(wikilink)) {
+    values.push(stripObsidianEmbedTarget(match[1]))
   }
 
   return values
@@ -326,6 +353,19 @@ function main() {
   const assets = new Set()
   const warnings = []
 
+  const inspectedExcalidrawFiles = new Set()
+  const collectAsset = (asset) => {
+    assets.add(asset)
+    if (!isExcalidrawMarkdown(asset) || inspectedExcalidrawFiles.has(asset)) return
+
+    inspectedExcalidrawFiles.add(asset)
+    const content = fs.readFileSync(asset, "utf8")
+    for (const target of excalidrawMarkdownAssetTargets(content)) {
+      const dependency = resolveAsset(target, asset, index, warnings, opts.verbose)
+      if (dependency) assets.add(dependency)
+    }
+  }
+
   for (const noteAbs of markdownFiles) {
     const raw = fs.readFileSync(noteAbs, "utf8")
     const parsed = parseMarkdown(raw, noteAbs)
@@ -337,11 +377,12 @@ function main() {
     const targets = [
       ...frontmatterAssetTargets(parsed.data),
       ...markdownAssetTargets(parsed.content),
+      ...(isExcalidrawMarkdown(noteAbs) ? excalidrawMarkdownAssetTargets(parsed.content) : []),
     ]
 
     for (const target of targets) {
       const asset = resolveAsset(target, noteAbs, index, warnings, opts.verbose)
-      if (asset) assets.add(asset)
+      if (asset) collectAsset(asset)
     }
   }
 

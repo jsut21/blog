@@ -1,0 +1,29 @@
+filters:
+  and:
+    - file.ext == "md"
+    - not:
+        - file.path.endsWith(".excalidraw.md")
+    - file.folder.startsWith(this.file.folder)
+    - publication_control != true
+    - note.publish == true
+    - note.draft != true
+properties:
+  title:
+    displayName: Title
+views:
+  - type: table
+    name: Published Notes
+    order:
+      - file.name
+      - title
+      - created
+      - tags
+      - cornell
+    sort:
+      - property: created
+        direction: DESC
+      - property: file.name
+        direction: ASC
+    limit: 100
+    summaries:
+      file.name: Filled

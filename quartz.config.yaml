@@ -15,10 +15,6 @@ configuration:
     - archive
     - 분류 전
     - claude code 활용
-    - "**/*.canvas"
-    - "**/*.base"
-    - "**/*.excalidraw"
-    - "**/*.excalidraw.md"
   theme:
     fontOrigin: googleFonts
     cdnCaching: true
@@ -76,6 +72,8 @@ plugins:
     order: 40
   - source: github:quartz-community/table-of-contents
     enabled: true
+    options:
+      maxDepth: 5
     order: 50
     layout:
       position: right
@@ -125,7 +123,13 @@ plugins:
   - source: github:quartz-community/cname
     enabled: false
   - source: github:quartz-community/canvas-page
-    enabled: false
+    enabled: true
+  - source: github:quartz-community/obsidian-plugin-excalidraw
+    enabled: true
+    options:
+      enableInteraction: true
+      darkMode: auto
+      exportPadding: 20
   - source: github:quartz-community/content-page
     enabled: true
   - source: github:quartz-community/folder-page
@@ -222,7 +226,7 @@ plugins:
       priority: 25
       display: mobile-only
   - source: github:quartz-community/bases-page
-    enabled: false
+    enabled: true
     options: {}
     order: 50
   - source: github:quartz-community/note-properties
@@ -288,4 +292,5 @@ layout:
       positions:
         right: []
     canvas: {}
+    excalidraw: {}
     bases: {}

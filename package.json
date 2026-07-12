@@ -21,7 +21,10 @@
     "install-plugins": "./quartz/bootstrap-cli.mjs plugin install",
     "prebuild": "npm run install-plugins",
     "stage:notes": "node tools/stage-commit-notes.mjs",
-    "stage:notes:apply": "node tools/stage-commit-notes.mjs --stage"
+    "stage:notes:apply": "node tools/stage-commit-notes.mjs --stage",
+    "sync:publication": "node tools/sync-publication-controls.mjs",
+    "sync:publication:apply": "node tools/sync-publication-controls.mjs --write",
+    "sync:publication:prune": "node tools/sync-publication-controls.mjs --prune"
   },
   "engines": {
     "npm": ">=10.9.2",

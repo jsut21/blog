@@ -1,3 +1,275 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+.explorer-content {
+  ul li {
+    min-width: 0;
+  }
+
+  ul li > a {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .folder-container {
+    min-width: 0;
+
+    > div {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  .folder-button {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .folder-title {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+body[data-slug="published-notes.base"] .bases-summary-row td:first-child {
+  font-weight: 600;
+
+  &::before {
+    content: "공개 노트: ";
+  }
+
+  &::after {
+    content: "개";
+  }
+}
+
+article.cornell {
+  --cornell-cue-width: 170px;
+  --cornell-gap: 30px;
+  --cornell-main-line: var(--gray);
+  --cornell-baseline: 2.2rem;
+  --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 60%);
+  --cornell-vertical-line: color-mix(in srgb, var(--gray), transparent 85%);
+
+  margin-top: 1.5rem;
+
+  > .markdown-preview-view {
+    display: flow-root;
+    position: relative;
+
+    @media all and (min-width: 801px) {
+      padding-left: calc(var(--cornell-cue-width) + var(--cornell-gap));
+      background-image: linear-gradient(var(--cornell-paper-line) 1px, transparent 1px);
+      background-position: 0 1.2rem;
+      background-size: 100% var(--cornell-baseline);
+      line-height: var(--cornell-baseline) !important;
+
+      > p,
+      > ul,
+      > ol,
+      > blockquote,
+      > table,
+      > pre {
+        margin-top: 0 !important;
+        margin-bottom: var(--cornell-baseline) !important;
+      }
+
+      &::before {
+        position: absolute;
+        z-index: 0;
+        top: -2.5rem;
+        bottom: 0;
+        left: var(--cornell-cue-width);
+        width: 1px;
+        background-color: var(--cornell-vertical-line);
+        content: "";
+      }
+
+      table,
+      pre,
+      .katex-display {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+    }
+
+    @media all and (min-width: 801px) and (max-width: 1200px) {
+      --cornell-cue-width: 140px;
+      --cornell-gap: 20px;
+    }
+
+    @media all and ($mobile) {
+      position: static !important;
+      z-index: auto !important;
+      margin-top: 0;
+      padding-top: 1rem;
+      padding-left: 0;
+      background-image: none !important;
+      line-height: 1.6rem !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      > * {
+        position: relative;
+        z-index: auto !important;
+        margin-bottom: 1.2rem !important;
+      }
+    }
+
+    > .callout[data-callout="cue"] {
+      position: relative;
+      background: var(--light) !important;
+      line-height: 1.4 !important;
+
+      @media all and (min-width: 801px) {
+        z-index: 2;
+        float: left;
+        clear: left;
+        width: var(--cornell-cue-width);
+        margin-bottom: 1rem !important;
+        margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+        padding: 0 5px !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        > .callout-title .callout-icon {
+          display: none !important;
+        }
+      }
+
+      @media all and ($mobile) {
+        margin: 1.5rem 0 !important;
+        padding: 0.5rem 1rem !important;
+        border: none !important;
+        border-left: 4px solid var(--secondary) !important;
+        border-radius: 0 4px 4px 0 !important;
+        background: var(--lightgray) !important;
+      }
+
+      > .callout-title {
+        padding: 0 !important;
+        background: none !important;
+        color: var(--secondary);
+        font-size: 0.75rem;
+        font-weight: 800;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+    }
+
+    > .callout[data-callout="summary"] {
+      clear: both;
+      box-sizing: border-box;
+      margin-top: calc(var(--cornell-baseline) * 2);
+      padding: 1.5rem !important;
+      border: 1px solid var(--cornell-main-line) !important;
+      border-radius: 4px !important;
+      background: var(--light) !important;
+      box-shadow: 4px 4px 0 color-mix(in srgb, var(--cornell-main-line), transparent 80%) !important;
+      line-height: 1.6 !important;
+
+      @media all and (min-width: 801px) {
+        width: calc(100% + var(--cornell-cue-width) + var(--cornell-gap));
+        margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+      }
+
+      @media all and ($mobile) {
+        margin: 2rem 0 !important;
+        background: var(--lightgray) !important;
+        box-shadow: none !important;
+
+        > .callout-title {
+          justify-content: center;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem !important;
+          border-bottom: 1px solid var(--gray);
+        }
+      }
+    }
+  }
+}
+
+.center:has(> article.cornell) .article-title {
+  display: flex;
+  align-items: baseline;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gray);
+
+  &::before {
+    flex-shrink: 0;
+    margin-right: 1rem;
+    color: var(--gray);
+    font-size: 0.7rem;
+    font-weight: 800;
+    opacity: 0.5;
+    content: "SUBJECT:";
+  }
+}
+
+.page:has(article.cornell) {
+  @media all and (min-width: 801px) and (max-width: 1200px) {
+    .right {
+      display: none !important;
+    }
+
+    .center {
+      grid-column: 2 / span 2 !important;
+    }
+  }
+}
+
+article.cornell .callout[data-callout="cue"] {
+  --color: #00b8d4;
+  --border: #00b8d444;
+  --bg: #00b8d410;
+}
+
+article.cornell .callout[data-callout="summary"] {
+  --color: #00b0ff;
+  --border: #00b0ff44;
+  --bg: #00b0ff10;
+}
+
+@media print {
+  article.cornell > .markdown-preview-view {
+    padding-left: 180px !important;
+    background-image: linear-gradient(#eee 1px, transparent 1px) !important;
+    background-size: 100% var(--cornell-baseline) !important;
+
+    &::before {
+      left: 170px !important;
+      background-color: #ccc !important;
+      opacity: 1 !important;
+    }
+
+    > .callout[data-callout="cue"] {
+      width: 160px !important;
+      margin-left: -180px !important;
+    }
+
+    > .callout[data-callout="summary"] {
+      width: 100% !important;
+      margin-left: -180px !important;
+    }
+  }
+
+  .sidebar,
+  .backlinks,
+  .graph,
+  nav {
+    display: none !important;
+  }
+}
