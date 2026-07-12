@@ -81,16 +81,16 @@ Graph plugin의 스크립트 구조가 upstream에서 바뀌면 빌드 중 명�
 
 ### Cornell 노트 변환
 
-frontmatter에 `cornell: true`가 있는 Markdown에만 적용한다.
+frontmatter의 `cornell` 값으로 연결형과 classic 모드를 선택한다.
 
-- `cssclasses`에 `cornell`을 추가한다.
+- `cornell: true`에는 `cornell`, `cornell: classic`에는 `cornell-classic` CSS class를 추가한다.
 - `cue`, `q`, `k`, `keyword`, `term` callout을 `cue`로 표준화한다.
 - `question`, `reflection`, `note` 등 의미가 있는 일반 callout type은 유지한다.
 - `summary` callout을 Cornell 요약 영역으로 처리한다.
-- 본문 끝의 `^block-id`를 Obsidian transformer보다 먼저 적용해 callout 다음 문단의 ID가 앞 callout에 잘못 붙는 upstream 동작을 보정한다.
+- 연결형에서는 본문 끝의 `^block-id`를 Obsidian transformer보다 먼저 적용해 callout 다음 문단의 ID가 앞 callout에 잘못 붙는 upstream 동작을 보정한다.
 - HTML 변환 후에는 요약 callout을 Quartz가 알아볼 수 있는 `summary`로 복원한다.
 
-`custom/cornell-callouts.ts`는 같은 block ID를 metadata로 가진 callout을 찾아 hover 미리보기, 클릭 고정, `Esc` 닫기와 패널 위치 계산을 담당한다.
+`custom/cornell-callouts.ts`는 `cornell: true`에서만 같은 block ID를 metadata로 가진 callout을 찾아 hover 미리보기, 클릭 고정, `Esc` 닫기, 좌우 배치와 연결선 위치 계산을 담당한다.
 
 ### 한국어 OG image 폰트
 
@@ -106,14 +106,16 @@ frontmatter에 `cornell: true`가 있는 Markdown에만 적용한다.
 
 ## Cornell 스타일
 
-`quartz/styles/custom.scss`는 `article.cornell`에만 Cornell 레이아웃을 적용한다.
+`quartz/styles/custom.scss`는 `article.cornell`과 `article.cornell-classic`을 독립적으로 처리한다.
 
 - 본문은 Quartz 기본 너비와 오른쪽 sidebar를 그대로 사용한다.
-- Cornell 종이 느낌을 위한 가로 기준선을 표시한다.
-- 연결된 본문 옆에 번호 표시를 두고, 본문을 가리키면 사용 가능한 좌우 공간에 해당 callout을 동적으로 연다.
+- 가로 기준선은 낮은 대비로 표시하고 본문 오른쪽 32px rail에 연결 번호를 둔다.
+- 활성 문단에는 왼쪽 accent와 옅은 배경을 표시한다.
+- callout은 rail 연결선이 있는 단일 sidebar sheet로 열고 내부 카드 테두리는 제거한다.
 - 열린 callout은 본문 흐름과 분리되어 길이가 본문 문단 간격에 영향을 주지 않는다.
 - 번호를 선택하면 callout을 고정하고 닫기 버튼이나 `Esc`로 닫는다.
-- 요약 callout은 전체 너비를 사용한다.
+- 요약 callout은 상단 accent 선이 있는 전체 너비 footer band로 표시한다.
+- `cornell-classic`은 분기 전 170px cue 열, 세로 구분선, card형 summary를 그대로 보존한다.
 - 인쇄 시에는 sidebar, backlinks, graph, navigation을 숨긴다.
 
 작성 문법과 Obsidian Reading View 플러그인은 [[Cornell 연결형 Callout]]에 정리한다.

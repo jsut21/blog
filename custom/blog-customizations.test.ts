@@ -3,7 +3,16 @@ import test from "node:test"
 import type { Element, Root, Text } from "hast"
 import { VFile } from "vfile"
 
-import { applyCornellBlockIds } from "./blog-customizations"
+import { applyCornellBlockIds, resolveCornellClass } from "./blog-customizations"
+
+test("resolves anchored and classic Cornell frontmatter values", () => {
+  assert.equal(resolveCornellClass(true), "cornell")
+  assert.equal(resolveCornellClass("true"), "cornell")
+  assert.equal(resolveCornellClass("classic"), "cornell-classic")
+  assert.equal(resolveCornellClass("Cornell-Classic"), "cornell-classic")
+  assert.equal(resolveCornellClass(false), null)
+  assert.equal(resolveCornellClass("other"), null)
+})
 
 test("applies paragraph block IDs before the upstream Obsidian transformer", () => {
   const text: Text = {

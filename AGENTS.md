@@ -47,9 +47,11 @@ tags:
 
 ## Cornell Notes
 
-- Enable the layout with `cornell: true` in frontmatter.
+- Use `cornell: true` for the anchored annotation rail layout.
+- Use `cornell: classic` to retain the pre-branch static cue-column layout.
 - Keep concepts and direct information in normal body blocks.
-- Attach a question, answer, reflection, or related note by giving the body block an ASCII block ID and using the same ID as callout metadata.
+- For `cornell: true`, attach a question, answer, reflection, or related note by giving the body block an ASCII block ID and using the same ID as callout metadata.
+- Classic notes keep cue callouts in document order and do not use the anchored hover runtime.
 
 ```md
 The primary concept belongs in the body. ^concept-id

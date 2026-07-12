@@ -37,6 +37,7 @@ test("places the annotation to the right without reserving a layout rail", () =>
       left: 928,
       width: 320,
       maxHeight: 684,
+      side: "right",
     },
   )
 })
@@ -56,6 +57,7 @@ test("uses the left side when the right side is too narrow", () => {
       left: 352,
       width: 320,
       maxHeight: 684,
+      side: "left",
     },
   )
 })
@@ -75,6 +77,7 @@ test("keeps a long annotation inside the viewport", () => {
       left: 352,
       width: 320,
       maxHeight: 400,
+      side: "left",
     },
   )
 })
@@ -94,6 +97,7 @@ test("overlays the annotation when neither side has enough space", () => {
       left: 240,
       width: 320,
       maxHeight: 584,
+      side: "overlay",
     },
   )
 })

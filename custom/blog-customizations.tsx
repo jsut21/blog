@@ -23,12 +23,20 @@ type CornellFileData = {
   blocks?: Record<string, Element>
 }
 
-function isCornellNote(file: VFile): boolean {
-  const frontmatter = file.data.frontmatter as CornellFrontmatter | undefined
-  return frontmatter?.cornell === true
+export function resolveCornellClass(value: unknown): "cornell" | "cornell-classic" | null {
+  if (value === true || value === "true") return "cornell"
+  if (typeof value !== "string") return null
+
+  const normalized = value.trim().toLowerCase()
+  return normalized === "classic" || normalized === "cornell-classic" ? "cornell-classic" : null
 }
 
-function addCornellClass(file: VFile): void {
+function getCornellClass(file: VFile): "cornell" | "cornell-classic" | null {
+  const frontmatter = file.data.frontmatter as CornellFrontmatter | undefined
+  return resolveCornellClass(frontmatter?.cornell)
+}
+
+function addCornellClass(file: VFile, cornellClass: "cornell" | "cornell-classic"): void {
   const frontmatter = file.data.frontmatter as CornellFrontmatter
   const current = frontmatter.cssclasses
   const classes = Array.isArray(current)
@@ -37,7 +45,7 @@ function addCornellClass(file: VFile): void {
       ? current.split(/\s+/).filter(Boolean)
       : []
 
-  frontmatter.cssclasses = [...new Set([...classes, "cornell"])]
+  frontmatter.cssclasses = [...new Set([...classes, cornellClass])]
 }
 
 function normalizeCornellCallout(node: Blockquote): void {
@@ -111,9 +119,10 @@ export const BlogCustomizations: QuartzTransformerPlugin = () => ({
   markdownPlugins() {
     return [
       () => (tree: MarkdownRoot, file: VFile) => {
-        if (!isCornellNote(file)) return
+        const cornellClass = getCornellClass(file)
+        if (!cornellClass) return
 
-        addCornellClass(file)
+        addCornellClass(file, cornellClass)
         visit(tree, "blockquote", normalizeCornellCallout)
       },
     ]
@@ -121,8 +130,9 @@ export const BlogCustomizations: QuartzTransformerPlugin = () => ({
   htmlPlugins() {
     return [
       () => (tree: HtmlRoot, file: VFile) => {
-        if (!isCornellNote(file)) return
-        applyCornellBlockIds(tree, file)
+        const cornellClass = getCornellClass(file)
+        if (!cornellClass) return
+        if (cornellClass === "cornell") applyCornellBlockIds(tree, file)
         visit(tree, "element", restoreSummaryCallout)
       },
     ]

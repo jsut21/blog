@@ -3,6 +3,7 @@ export type CornellPanelPlacement = {
   left: number
   width: number
   maxHeight: number
+  side: "right" | "left" | "overlay"
 }
 
 type CornellPanelPlacementOptions = {
@@ -50,16 +51,20 @@ export function getCornellPanelPlacement({
 
   let left: number
   let width: number
+  let side: CornellPanelPlacement["side"]
   if (rightAvailableWidth >= minWidth) {
     width = Math.min(maxWidth, rightAvailableWidth)
     left = targetRight + gap
+    side = "right"
   } else if (leftAvailableWidth >= minWidth) {
     width = Math.min(maxWidth, leftAvailableWidth)
     left = targetLeft - gap - width
+    side = "left"
   } else {
     width = Math.min(maxWidth, viewportAvailableWidth)
     const targetCenter = (targetLeft + targetRight) / 2
     left = Math.min(Math.max(targetCenter - width / 2, margin), viewportWidth - margin - width)
+    side = "overlay"
   }
 
   return {
@@ -67,6 +72,7 @@ export function getCornellPanelPlacement({
     left,
     width,
     maxHeight: Math.max(minVisibleHeight, viewportHeight - top - margin),
+    side,
   }
 }
 
@@ -146,7 +152,18 @@ function initializeCornellCallouts() {
       record.panel.style.setProperty("--cornell-panel-left", placement.left + "px")
       record.panel.style.setProperty("--cornell-panel-width", placement.width + "px")
       record.panel.style.setProperty("--cornell-panel-max-height", placement.maxHeight + "px")
+      record.panel.dataset.placement = placement.side
       record.panel.classList.add("is-positioned")
+
+      const panelHeight = Math.min(
+        record.panel.getBoundingClientRect().height,
+        placement.maxHeight,
+      )
+      const anchorY = Math.min(
+        Math.max(targetRect.top + targetRect.height / 2 - placement.top, 16),
+        Math.max(16, panelHeight - 16),
+      )
+      record.panel.style.setProperty("--cornell-panel-anchor-y", anchorY + "px")
     }
 
     function schedulePosition() {
@@ -208,14 +225,20 @@ function initializeCornellCallouts() {
       panel.className = "cornell-annotation-panel"
       panel.id = "cornell-annotation-" + group.targetId
       panel.setAttribute("aria-hidden", "true")
-      panel.setAttribute("aria-label", "연결된 주석")
+      const heading = document.createElement("div")
+      heading.className = "cornell-annotation-heading"
+      heading.id = panel.id + "-heading"
+      heading.textContent = "연결 주석 " + markerIndex
+      panel.setAttribute("aria-labelledby", heading.id)
 
       const closeButton = document.createElement("button")
       closeButton.type = "button"
       closeButton.className = "cornell-annotation-close"
       closeButton.setAttribute("aria-label", "주석 닫기")
       closeButton.textContent = "×"
-      panel.append(closeButton)
+      const content = document.createElement("div")
+      content.className = "cornell-annotation-content"
+      panel.append(heading, closeButton, content)
 
       const placeholders = []
       for (const callout of group.callouts) {
@@ -223,7 +246,7 @@ function initializeCornellCallouts() {
         callout.before(placeholder)
         placeholders.push({ callout, placeholder })
         callout.classList.add("cornell-annotation")
-        panel.append(callout)
+        content.append(callout)
       }
 
       const title = group.callouts[0]?.querySelector(".callout-title-inner")?.textContent?.trim()

@@ -54,10 +54,13 @@ body[data-slug="published-notes.base"] .bases-summary-row td:first-child {
 }
 
 article.cornell {
-  --cornell-marker-gutter: 30px;
+  --cornell-marker-gutter: 32px;
+  --cornell-rail-offset: 13px;
   --cornell-main-line: var(--gray);
   --cornell-baseline: 2.2rem;
-  --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 60%);
+  --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 84%);
+  --cornell-rail-line: color-mix(in srgb, var(--secondary), transparent 72%);
+  --cornell-summary-accent: #00b0ff;
 
   margin-top: 1.5rem;
 
@@ -79,6 +82,29 @@ article.cornell {
       > pre {
         margin-top: 0 !important;
         margin-bottom: var(--cornell-baseline) !important;
+      }
+
+      &::after {
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        right: var(--cornell-rail-offset);
+        bottom: 0;
+        width: 1px;
+        background: var(--cornell-rail-line);
+        content: "";
+        pointer-events: none;
+      }
+
+      > h2 {
+        position: relative;
+        z-index: 1;
+        margin-top: calc(var(--cornell-baseline) * 1.25);
+        margin-bottom: 0.85rem;
+        padding: 0.25rem var(--cornell-marker-gutter) 0.55rem 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--lightgray), transparent 30%);
+        background: var(--light);
+        line-height: 1.35 !important;
       }
 
       table,
@@ -109,13 +135,22 @@ article.cornell {
     > .callout[data-callout="summary"] {
       clear: both;
       box-sizing: border-box;
-      margin-top: calc(var(--cornell-baseline) * 2);
-      padding: 1.5rem !important;
-      border: 1px solid var(--cornell-main-line) !important;
-      border-radius: 4px !important;
-      background: var(--light) !important;
-      box-shadow: 4px 4px 0 color-mix(in srgb, var(--cornell-main-line), transparent 80%) !important;
+      position: relative;
+      z-index: 1;
+      margin-top: calc(var(--cornell-baseline) * 1.75);
+      padding: 1.25rem 1.35rem !important;
+      border: 0 !important;
+      border-top: 2px solid var(--cornell-summary-accent) !important;
+      border-radius: 0 0 4px 4px !important;
+      background: color-mix(in srgb, var(--cornell-summary-accent), transparent 96%) !important;
+      box-shadow: none !important;
       line-height: 1.6 !important;
+
+      > .callout-title {
+        margin-bottom: 0.65rem;
+        padding: 0 0 0.55rem !important;
+        border-bottom: 1px solid color-mix(in srgb, var(--gray), transparent 70%);
+      }
 
       @media all and ($mobile) {
         margin: 2rem 0 !important;
@@ -134,6 +169,172 @@ article.cornell {
 }
 
 .center:has(> article.cornell) .article-title {
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--gray);
+}
+
+article.cornell .callout[data-callout="cue"] {
+  --color: #00b8d4;
+  --border: #00b8d444;
+  --bg: #00b8d410;
+}
+
+article.cornell .callout[data-callout="summary"] {
+  --color: #00b0ff;
+  --border: #00b0ff44;
+  --bg: #00b0ff10;
+}
+
+article.cornell-classic {
+  --cornell-cue-width: 170px;
+  --cornell-gap: 30px;
+  --cornell-main-line: var(--gray);
+  --cornell-baseline: 2.2rem;
+  --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 60%);
+  --cornell-vertical-line: color-mix(in srgb, var(--gray), transparent 85%);
+
+  margin-top: 1.5rem;
+
+  > .markdown-preview-view {
+    display: flow-root;
+    position: relative;
+
+    @media all and (min-width: 801px) {
+      padding-left: calc(var(--cornell-cue-width) + var(--cornell-gap));
+      background-image: linear-gradient(var(--cornell-paper-line) 1px, transparent 1px);
+      background-position: 0 1.2rem;
+      background-size: 100% var(--cornell-baseline);
+      line-height: var(--cornell-baseline) !important;
+
+      > p,
+      > ul,
+      > ol,
+      > blockquote,
+      > table,
+      > pre {
+        margin-top: 0 !important;
+        margin-bottom: var(--cornell-baseline) !important;
+      }
+
+      &::before {
+        position: absolute;
+        z-index: 0;
+        top: -2.5rem;
+        bottom: 0;
+        left: var(--cornell-cue-width);
+        width: 1px;
+        background-color: var(--cornell-vertical-line);
+        content: "";
+      }
+
+      table,
+      pre,
+      .katex-display {
+        display: block;
+        max-width: 100%;
+        overflow-x: auto;
+      }
+    }
+
+    @media all and (min-width: 801px) and (max-width: 1200px) {
+      --cornell-cue-width: 140px;
+      --cornell-gap: 20px;
+    }
+
+    @media all and ($mobile) {
+      position: static !important;
+      z-index: auto !important;
+      margin-top: 0;
+      padding-top: 1rem;
+      padding-left: 0;
+      background-image: none !important;
+      line-height: 1.6rem !important;
+
+      &::before {
+        display: none !important;
+      }
+
+      > * {
+        position: relative;
+        z-index: auto !important;
+        margin-bottom: 1.2rem !important;
+      }
+    }
+
+    > .callout[data-callout="cue"] {
+      position: relative;
+      background: var(--light) !important;
+      line-height: 1.4 !important;
+
+      @media all and (min-width: 801px) {
+        z-index: 2;
+        float: left;
+        clear: left;
+        width: var(--cornell-cue-width);
+        margin-bottom: 1rem !important;
+        margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+        padding: 0 5px !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        > .callout-title .callout-icon {
+          display: none !important;
+        }
+      }
+
+      @media all and ($mobile) {
+        margin: 1.5rem 0 !important;
+        padding: 0.5rem 1rem !important;
+        border: none !important;
+        border-left: 4px solid var(--secondary) !important;
+        border-radius: 0 4px 4px 0 !important;
+        background: var(--lightgray) !important;
+      }
+
+      > .callout-title {
+        padding: 0 !important;
+        background: none !important;
+        color: var(--secondary);
+        font-size: 0.75rem;
+        font-weight: 800;
+        line-height: 1.4;
+        text-transform: uppercase;
+      }
+    }
+
+    > .callout[data-callout="summary"] {
+      clear: both;
+      box-sizing: border-box;
+      margin-top: calc(var(--cornell-baseline) * 2);
+      padding: 1.5rem !important;
+      border: 1px solid var(--cornell-main-line) !important;
+      border-radius: 4px !important;
+      background: var(--light) !important;
+      box-shadow: 4px 4px 0 color-mix(in srgb, var(--cornell-main-line), transparent 80%) !important;
+      line-height: 1.6 !important;
+
+      @media all and (min-width: 801px) {
+        width: calc(100% + var(--cornell-cue-width) + var(--cornell-gap));
+        margin-left: calc(-1 * (var(--cornell-cue-width) + var(--cornell-gap)));
+      }
+
+      @media all and ($mobile) {
+        margin: 2rem 0 !important;
+        background: var(--lightgray) !important;
+        box-shadow: none !important;
+
+        > .callout-title {
+          justify-content: center;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem !important;
+          border-bottom: 1px solid var(--gray);
+        }
+      }
+    }
+  }
+}
+
+.center:has(> article.cornell-classic) .article-title {
   display: flex;
   align-items: baseline;
   padding-bottom: 0.5rem;
@@ -150,13 +351,25 @@ article.cornell {
   }
 }
 
-article.cornell .callout[data-callout="cue"] {
+.page:has(article.cornell-classic) {
+  @media all and (min-width: 801px) and (max-width: 1200px) {
+    .right {
+      display: none !important;
+    }
+
+    .center {
+      grid-column: 2 / span 2 !important;
+    }
+  }
+}
+
+article.cornell-classic .callout[data-callout="cue"] {
   --color: #00b8d4;
   --border: #00b8d444;
   --bg: #00b8d410;
 }
 
-article.cornell .callout[data-callout="summary"] {
+article.cornell-classic .callout[data-callout="summary"] {
   --color: #00b0ff;
   --border: #00b0ff44;
   --bg: #00b0ff10;
@@ -164,12 +377,16 @@ article.cornell .callout[data-callout="summary"] {
 
 .cornell-annotation-anchor {
   position: relative;
+  z-index: 1;
   padding-right: var(--cornell-marker-gutter);
-  border-radius: 4px;
-  transition: background-color 120ms ease;
+  border-radius: 2px;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
 
   &.is-cornell-annotation-active {
-    background-color: color-mix(in srgb, var(--secondary), transparent 92%);
+    background-color: color-mix(in srgb, var(--secondary), transparent 94%);
+    box-shadow: inset 2px 0 var(--secondary);
   }
 }
 
@@ -178,32 +395,42 @@ article.cornell .callout[data-callout="summary"] {
   top: 0.2em;
   right: 2px;
   left: auto;
+  z-index: 2;
   display: inline-grid;
   place-items: center;
   box-sizing: border-box;
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1px solid var(--gray);
+  border: 1px solid var(--cornell-rail-line);
   border-radius: 50%;
   background: var(--light);
-  color: var(--secondary);
+  color: var(--gray);
   font-family: var(--bodyFont);
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 1;
-  opacity: 0.72;
+  opacity: 0.88;
   cursor: pointer;
   transition:
+    background-color 120ms ease,
     border-color 120ms ease,
+    box-shadow 120ms ease,
     color 120ms ease,
     opacity 120ms ease;
 
   &:hover,
-  &:focus-visible,
-  &[aria-expanded="true"] {
+  &:focus-visible {
     border-color: var(--secondary);
     color: var(--secondary);
+    opacity: 1;
+  }
+
+  &[aria-expanded="true"] {
+    border-color: var(--secondary);
+    background: var(--secondary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--secondary), transparent 82%);
+    color: var(--light);
     opacity: 1;
   }
 
@@ -220,18 +447,47 @@ article.cornell .callout[data-callout="summary"] {
   left: var(--cornell-panel-left, 1rem);
   box-sizing: border-box;
   width: var(--cornell-panel-width, 300px);
-  max-height: var(--cornell-panel-max-height, 72vh);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  padding: 0.75rem 0.9rem 0.9rem;
+  overflow: visible;
+  border: 1px solid var(--lightgray);
+  border-left: 2px solid var(--secondary);
+  border-radius: 4px;
+  background: var(--light);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--dark), transparent 84%);
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
   transform: translateY(4px);
-  scrollbar-gutter: stable;
   transition:
     opacity 120ms ease,
     transform 120ms ease,
     visibility 0s linear 120ms;
+
+  &::before {
+    position: absolute;
+    top: var(--cornell-panel-anchor-y, 16px);
+    width: 28px;
+    border-top: 1px solid var(--secondary);
+    content: "";
+    pointer-events: none;
+  }
+
+  &[data-placement="right"]::before {
+    right: 100%;
+  }
+
+  &[data-placement="left"] {
+    border-right: 2px solid var(--secondary);
+    border-left: 1px solid var(--lightgray);
+  }
+
+  &[data-placement="left"]::before {
+    left: 100%;
+  }
+
+  &[data-placement="overlay"]::before {
+    display: none;
+  }
 
   &.is-active.is-positioned {
     visibility: visible;
@@ -240,24 +496,51 @@ article.cornell .callout[data-callout="summary"] {
     transform: translateY(0);
     transition-delay: 0s;
   }
+}
+
+.cornell-annotation-heading {
+  min-height: 1.6rem;
+  margin: 0 2rem 0.75rem 0;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--gray), transparent 70%);
+  color: var(--gray);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.cornell-annotation-content {
+  max-height: calc(var(--cornell-panel-max-height, 72vh) - 3.5rem);
+  padding-right: 0.15rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 
   > .callout.cornell-annotation {
     float: none !important;
     clear: none !important;
     width: 100% !important;
-    margin: 0 0 0.75rem !important;
-    padding: 0 1rem !important;
-    border-color: var(--border) !important;
-    background: var(--light) !important;
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--dark), transparent 88%);
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     line-height: 1.55 !important;
 
-    &:last-child {
-      margin-bottom: 0 !important;
+    + .callout.cornell-annotation {
+      margin-top: 0.85rem !important;
+      padding-top: 0.85rem !important;
+      border-top: 1px solid color-mix(in srgb, var(--gray), transparent 76%) !important;
     }
 
     > .callout-title {
-      padding-right: 1.75rem;
+      margin-bottom: 0.55rem;
+      padding: 0 !important;
+    }
+
+    > .callout-content {
+      padding: 0 !important;
     }
   }
 }
@@ -293,6 +576,28 @@ article.cornell .callout[data-callout="summary"] {
 }
 
 @media print {
+  article.cornell-classic > .markdown-preview-view {
+    padding-left: 180px !important;
+    background-image: linear-gradient(#eee 1px, transparent 1px) !important;
+    background-size: 100% var(--cornell-baseline) !important;
+
+    &::before {
+      left: 170px !important;
+      background-color: #ccc !important;
+      opacity: 1 !important;
+    }
+
+    > .callout[data-callout="cue"] {
+      width: 160px !important;
+      margin-left: -180px !important;
+    }
+
+    > .callout[data-callout="summary"] {
+      width: 100% !important;
+      margin-left: -180px !important;
+    }
+  }
+
   article.cornell > .markdown-preview-view {
     background-image: linear-gradient(#eee 1px, transparent 1px) !important;
     background-size: 100% var(--cornell-baseline) !important;
@@ -317,7 +622,16 @@ article.cornell .callout[data-callout="summary"] {
       pointer-events: auto !important;
       transform: none !important;
 
-      > .callout.cornell-annotation {
+      &::before {
+        display: none !important;
+      }
+
+      > .cornell-annotation-content {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      > .cornell-annotation-content > .callout.cornell-annotation {
         break-inside: avoid;
         box-shadow: none !important;
       }

@@ -17,6 +17,13 @@ Cornell 문서의 본문에는 개념, 사실, 직접적인 설명을 기록한�
 
 긴 callout을 본문과 같은 Grid 행에 두면 반대쪽 본문에 큰 여백이 생긴다. 이 구현은 연결된 callout을 본문 흐름에서 분리하고, 대상 본문을 가리킬 때만 주변의 사용 가능한 공간에 팝오버로 표시한다. 평소에는 별도 callout 열을 확보하지 않는다.
 
+## 모드 선택
+
+- `cornell: true`: 본문 오른쪽의 축약 annotation rail과 연결형 팝오버를 사용한다.
+- `cornell: classic`: 분기 전의 170px 고정 cue 열과 정적 2열 배치를 사용한다.
+
+classic 모드는 callout metadata를 해석하는 hover 런타임을 실행하지 않는다. cue와 본문의 관계는 Markdown 작성 순서와 고정 열 배치로 표현된다.
+
 ## 작성 문법
 
 frontmatter에 `cornell: true`를 설정한다.
@@ -49,10 +56,12 @@ block ID는 영문, 숫자, 하이픈만 사용한다. 본문과 callout을 원�
 
 ## 블로그 동작
 
-연결된 callout이 있는 본문에는 번호 표시가 추가된다.
+연결된 callout이 있는 본문에는 오른쪽 32px annotation rail에 번호 표시가 추가된다.
 
 - 본문을 약 180ms 동안 가리키면 callout을 미리 본다.
 - 포인터를 callout 안으로 옮겨도 닫히지 않는다.
+- 활성 문단은 옅은 배경과 왼쪽 accent 선으로 구분한다.
+- 열린 callout은 rail과 연결선으로 이어진 단일 sidebar sheet에 표시한다.
 - 번호를 선택하면 callout이 고정된다.
 - 닫기 버튼이나 `Esc`로 닫는다.
 - 한 시점에는 한 본문의 callout만 펼친다.
@@ -64,7 +73,7 @@ ID가 없거나 대상 본문을 찾지 못한 callout은 일반 문서 흐름�
 
 ## Obsidian Reading View
 
-로컬 `Cornell Anchored Callouts` 플러그인이 블로그와 같은 연결 문법을 처리한다.
+로컬 `Cornell Anchored Callouts` 플러그인이 블로그와 같은 연결형·classic 모드를 처리한다.
 
 ```text
 .obsidian/plugins/cornell-anchored-callouts/
@@ -73,7 +82,7 @@ ID가 없거나 대상 본문을 찾지 못한 callout은 일반 문서 흐름�
 |-- styles.css
 ```
 
-플러그인은 `registerMarkdownPostProcessor()`로 Reading View 렌더링이 끝난 뒤 연결 대상과 callout을 찾는다. 원본 callout은 숨기고 복제한 callout을 본문 폭을 바꾸지 않는 고정 팝오버로 표시한다.
+`cornell: true`에서는 `registerMarkdownPostProcessor()`로 연결 대상과 callout을 찾아 원본 callout을 숨기고 복제본을 고정 팝오버로 표시한다. `cornell: classic`에서는 연결 런타임을 끄고 기존 cue 열 스타일만 적용한다.
 
 `.obsidian/`은 Git ignore 대상이므로 플러그인 자체는 로컬 Vault에만 있다. 파일을 수정한 뒤에는 Obsidian을 재시작하거나 커뮤니티 플러그인 설정에서 껐다가 다시 켠다.
 
