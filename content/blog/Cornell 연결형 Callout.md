@@ -15,7 +15,7 @@ tags:
 
 Cornell 문서의 본문에는 개념, 사실, 직접적인 설명을 기록한다. 본문에서 생긴 질문과 답변, 개인적인 생각, 연관 정보는 callout으로 분리하되 어느 본문에 연결되는지 명시한다.
 
-긴 callout을 본문과 같은 Grid 행에 두면 반대쪽 본문에 큰 여백이 생긴다. 이 구현은 본문 흐름에서 연결된 callout을 분리하고, 대상 본문을 가리킬 때 왼쪽 여백에 동적으로 표시한다.
+긴 callout을 본문과 같은 Grid 행에 두면 반대쪽 본문에 큰 여백이 생긴다. 이 구현은 연결된 callout을 본문 흐름에서 분리하고, 대상 본문을 가리킬 때만 주변의 사용 가능한 공간에 팝오버로 표시한다. 평소에는 별도 callout 열을 확보하지 않는다.
 
 ## 작성 문법
 
@@ -57,6 +57,7 @@ block ID는 영문, 숫자, 하이픈만 사용한다. 본문과 callout을 원�
 - 닫기 버튼이나 `Esc`로 닫는다.
 - 한 시점에는 한 본문의 callout만 펼친다.
 - 긴 callout은 패널 내부에서 스크롤한다.
+- 패널은 본문 오른쪽을 우선하고, 공간이 부족하면 왼쪽 또는 본문 위에 겹쳐 표시한다.
 - callout이 길어져도 본문 문단 간격은 바뀌지 않는다.
 
 ID가 없거나 대상 본문을 찾지 못한 callout은 일반 문서 흐름에 그대로 남는다.
@@ -72,7 +73,7 @@ ID가 없거나 대상 본문을 찾지 못한 callout은 일반 문서 흐름�
 |-- styles.css
 ```
 
-플러그인은 `registerMarkdownPostProcessor()`로 Reading View 렌더링이 끝난 뒤 연결 대상과 callout을 찾는다. 원본 callout은 숨기고 복제한 callout을 왼쪽 패널에 표시한다.
+플러그인은 `registerMarkdownPostProcessor()`로 Reading View 렌더링이 끝난 뒤 연결 대상과 callout을 찾는다. 원본 callout은 숨기고 복제한 callout을 본문 폭을 바꾸지 않는 고정 팝오버로 표시한다.
 
 `.obsidian/`은 Git ignore 대상이므로 플러그인 자체는 로컬 Vault에만 있다. 파일을 수정한 뒤에는 Obsidian을 재시작하거나 커뮤니티 플러그인 설정에서 껐다가 다시 켠다.
 

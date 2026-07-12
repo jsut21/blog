@@ -8,6 +8,7 @@ export type CornellPanelPlacement = {
 type CornellPanelPlacementOptions = {
   targetTop: number
   targetLeft: number
+  targetRight: number
   panelHeight: number
   viewportWidth: number
   viewportHeight: number
@@ -28,6 +29,7 @@ export function parseCornellTargetMetadata(value: unknown): string | null {
 export function getCornellPanelPlacement({
   targetTop,
   targetLeft,
+  targetRight,
   panelHeight,
   viewportWidth,
   viewportHeight,
@@ -37,17 +39,32 @@ export function getCornellPanelPlacement({
   maxWidth = 320,
   minVisibleHeight = 180,
 }: CornellPanelPlacementOptions): CornellPanelPlacement | null {
-  const availableWidth = Math.min(targetLeft - gap - margin, viewportWidth - margin * 2)
-  if (availableWidth < minWidth) return null
+  const viewportAvailableWidth = viewportWidth - margin * 2
+  if (viewportAvailableWidth < minWidth) return null
 
-  const width = Math.min(maxWidth, availableWidth)
+  const rightAvailableWidth = viewportWidth - targetRight - gap - margin
+  const leftAvailableWidth = targetLeft - gap - margin
   const visibleHeight = Math.min(Math.max(panelHeight, minVisibleHeight), viewportHeight * 0.72)
   const maximumTop = Math.max(margin, viewportHeight - visibleHeight - margin)
   const top = Math.min(Math.max(targetTop, margin), maximumTop)
 
+  let left: number
+  let width: number
+  if (rightAvailableWidth >= minWidth) {
+    width = Math.min(maxWidth, rightAvailableWidth)
+    left = targetRight + gap
+  } else if (leftAvailableWidth >= minWidth) {
+    width = Math.min(maxWidth, leftAvailableWidth)
+    left = targetLeft - gap - width
+  } else {
+    width = Math.min(maxWidth, viewportAvailableWidth)
+    const targetCenter = (targetLeft + targetRight) / 2
+    left = Math.min(Math.max(targetCenter - width / 2, margin), viewportWidth - margin - width)
+  }
+
   return {
     top,
-    left: Math.max(margin, targetLeft - gap - width),
+    left,
     width,
     maxHeight: Math.max(minVisibleHeight, viewportHeight - top - margin),
   }
@@ -114,6 +131,7 @@ function initializeCornellCallouts() {
       const placement = getCornellPanelPlacement({
         targetTop: targetRect.top,
         targetLeft: targetRect.left,
+        targetRight: targetRect.right,
         panelHeight: record.panel.scrollHeight,
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,

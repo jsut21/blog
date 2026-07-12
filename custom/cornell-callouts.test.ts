@@ -22,11 +22,31 @@ test("rejects metadata that cannot be an Obsidian block identifier", () => {
   assert.equal(parseCornellTargetMetadata("left wide"), null)
 })
 
-test("places the annotation to the left of its target", () => {
+test("places the annotation to the right without reserving a layout rail", () => {
+  assert.deepEqual(
+    getCornellPanelPlacement({
+      targetTop: 200,
+      targetLeft: 300,
+      targetRight: 900,
+      panelHeight: 240,
+      viewportWidth: 1440,
+      viewportHeight: 900,
+    }),
+    {
+      top: 200,
+      left: 928,
+      width: 320,
+      maxHeight: 684,
+    },
+  )
+})
+
+test("uses the left side when the right side is too narrow", () => {
   assert.deepEqual(
     getCornellPanelPlacement({
       targetTop: 200,
       targetLeft: 700,
+      targetRight: 1200,
       panelHeight: 240,
       viewportWidth: 1440,
       viewportHeight: 900,
@@ -45,6 +65,7 @@ test("keeps a long annotation inside the viewport", () => {
     getCornellPanelPlacement({
       targetTop: 820,
       targetLeft: 700,
+      targetRight: 1200,
       panelHeight: 400,
       viewportWidth: 1440,
       viewportHeight: 900,
@@ -58,16 +79,22 @@ test("keeps a long annotation inside the viewport", () => {
   )
 })
 
-test("does not create a desktop panel when the left rail is too narrow", () => {
-  assert.equal(
+test("overlays the annotation when neither side has enough space", () => {
+  assert.deepEqual(
     getCornellPanelPlacement({
       targetTop: 100,
-      targetLeft: 280,
+      targetLeft: 120,
+      targetRight: 680,
       panelHeight: 200,
       viewportWidth: 800,
       viewportHeight: 700,
     }),
-    null,
+    {
+      top: 100,
+      left: 240,
+      width: 320,
+      maxHeight: 584,
+    },
   )
 })
 

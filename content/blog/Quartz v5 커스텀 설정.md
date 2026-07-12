@@ -108,9 +108,9 @@ frontmatter에 `cornell: true`가 있는 Markdown에만 적용한다.
 
 `quartz/styles/custom.scss`는 `article.cornell`에만 Cornell 레이아웃을 적용한다.
 
-- 데스크톱에서 약 300px의 callout 영역과 본문 영역을 분리한다.
-- 종이 기준선과 세로 구분선을 표시한다.
-- 연결된 본문 옆에 번호 표시를 두고, 본문을 가리키면 해당 callout만 동적으로 연다.
+- 본문은 Quartz 기본 너비와 오른쪽 sidebar를 그대로 사용한다.
+- Cornell 종이 느낌을 위한 가로 기준선을 표시한다.
+- 연결된 본문 옆에 번호 표시를 두고, 본문을 가리키면 사용 가능한 좌우 공간에 해당 callout을 동적으로 연다.
 - 열린 callout은 본문 흐름과 분리되어 길이가 본문 문단 간격에 영향을 주지 않는다.
 - 번호를 선택하면 callout을 고정하고 닫기 버튼이나 `Esc`로 닫는다.
 - 요약 callout은 전체 너비를 사용한다.
