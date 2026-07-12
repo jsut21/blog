@@ -87,9 +87,9 @@ article.cornell {
       &::after {
         position: absolute;
         z-index: 0;
-        top: 0;
+        top: var(--cornell-rail-top, 0);
         right: var(--cornell-rail-offset);
-        bottom: 0;
+        bottom: var(--cornell-rail-bottom, 100%);
         width: 1px;
         background: var(--cornell-rail-line);
         content: "";

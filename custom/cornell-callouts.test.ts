@@ -4,8 +4,21 @@ import test from "node:test"
 import {
   cornellCalloutScript,
   getCornellPanelPlacement,
+  getCornellRailBounds,
   parseCornellTargetMetadata,
 } from "./cornell-callouts"
+
+test("limits the annotation rail to the first and last marker centers", () => {
+  assert.deepEqual(
+    getCornellRailBounds({
+      rootTop: 200,
+      rootBottom: 1000,
+      markerCenters: [320, 760, 500],
+    }),
+    { top: 120, bottom: 240 },
+  )
+  assert.equal(getCornellRailBounds({ rootTop: 200, rootBottom: 1000, markerCenters: [] }), null)
+})
 
 test("parses explicit Cornell callout targets", () => {
   assert.equal(parseCornellTargetMetadata("publish-policy"), "publish-policy")
