@@ -6,16 +6,21 @@ import type { VFile } from "vfile"
 import type { BuildCtx } from "../quartz/util/ctx"
 import type { QuartzEmitterPluginInstance, QuartzTransformerPlugin } from "../quartz/plugins/types"
 import { explorerTitleTooltipScript } from "./explorer-title-tooltip"
+import { cornellCalloutScript } from "./cornell-callouts"
 
 const googleSiteVerification = "W8IVa27qjis0c6LMSVWmujXE1G7tqUpRu9bP9axXUiA"
 const koreanOgFont = "Noto Sans KR"
-const cueAliases = new Set(["cue", "q", "k", "question", "keyword", "term"])
-const summaryAliases = new Set(["summary", "reflection"])
+const cueAliases = new Set(["cue", "q", "k", "keyword", "term"])
+const summaryAliases = new Set(["summary"])
 const calloutDirective = /^\[!([\w-]+)(\|[^\]]+)?\]([+-]?)(.*)$/
 
 type CornellFrontmatter = {
   cornell?: unknown
   cssclasses?: unknown
+}
+
+type CornellFileData = {
+  blocks?: Record<string, Element>
 }
 
 function isCornellNote(file: VFile): boolean {
@@ -81,6 +86,26 @@ function restoreSummaryCallout(node: Element): void {
   }
 }
 
+export function applyCornellBlockIds(tree: HtmlRoot, file: VFile): void {
+  const fileData = file.data as typeof file.data & CornellFileData
+  const blocks = (fileData.blocks ??= {})
+
+  visit(tree, "element", (node: Element) => {
+    if (node.tagName !== "p" && node.tagName !== "li") return
+
+    const lastChild = node.children.at(-1)
+    if (lastChild?.type !== "text") return
+
+    const match = lastChild.value.match(/\s\^([A-Za-z0-9-]+)$/)
+    if (!match) return
+
+    const blockId = match[1].toLowerCase()
+    lastChild.value = lastChild.value.replace(match[0], "").trimEnd()
+    node.properties.id = blockId
+    blocks[blockId] = node
+  })
+}
+
 export const BlogCustomizations: QuartzTransformerPlugin = () => ({
   name: "BlogCustomizations",
   markdownPlugins() {
@@ -97,6 +122,7 @@ export const BlogCustomizations: QuartzTransformerPlugin = () => ({
     return [
       () => (tree: HtmlRoot, file: VFile) => {
         if (!isCornellNote(file)) return
+        applyCornellBlockIds(tree, file)
         visit(tree, "element", restoreSummaryCallout)
       },
     ]
@@ -106,6 +132,12 @@ export const BlogCustomizations: QuartzTransformerPlugin = () => ({
       js: [
         {
           script: explorerTitleTooltipScript,
+          loadTime: "afterDOMReady",
+          contentType: "inline",
+          spaPreserve: true,
+        },
+        {
+          script: cornellCalloutScript,
           loadTime: "afterDOMReady",
           contentType: "inline",
           spaPreserve: true,

@@ -84,9 +84,13 @@ Graph plugin의 스크립트 구조가 upstream에서 바뀌면 빌드 중 명�
 frontmatter에 `cornell: true`가 있는 Markdown에만 적용한다.
 
 - `cssclasses`에 `cornell`을 추가한다.
-- `cue`, `q`, `k`, `question`, `keyword`, `term` callout을 `cue`로 표준화한다.
-- `summary`, `reflection` callout을 Cornell 요약 영역으로 처리한다.
+- `cue`, `q`, `k`, `keyword`, `term` callout을 `cue`로 표준화한다.
+- `question`, `reflection`, `note` 등 의미가 있는 일반 callout type은 유지한다.
+- `summary` callout을 Cornell 요약 영역으로 처리한다.
+- 본문 끝의 `^block-id`를 Obsidian transformer보다 먼저 적용해 callout 다음 문단의 ID가 앞 callout에 잘못 붙는 upstream 동작을 보정한다.
 - HTML 변환 후에는 요약 callout을 Quartz가 알아볼 수 있는 `summary`로 복원한다.
+
+`custom/cornell-callouts.ts`는 같은 block ID를 metadata로 가진 callout을 찾아 hover 미리보기, 클릭 고정, `Esc` 닫기와 패널 위치 계산을 담당한다.
 
 ### 한국어 OG image 폰트
 
@@ -104,11 +108,15 @@ frontmatter에 `cornell: true`가 있는 Markdown에만 적용한다.
 
 `quartz/styles/custom.scss`는 `article.cornell`에만 Cornell 레이아웃을 적용한다.
 
-- 데스크톱에서 cue 영역과 본문 영역을 분리한다.
+- 데스크톱에서 약 300px의 callout 영역과 본문 영역을 분리한다.
 - 종이 기준선과 세로 구분선을 표시한다.
+- 연결된 본문 옆에 번호 표시를 두고, 본문을 가리키면 해당 callout만 동적으로 연다.
+- 열린 callout은 본문 흐름과 분리되어 길이가 본문 문단 간격에 영향을 주지 않는다.
+- 번호를 선택하면 callout을 고정하고 닫기 버튼이나 `Esc`로 닫는다.
 - 요약 callout은 전체 너비를 사용한다.
-- 모바일에서는 단일 열로 변환하고 cue를 왼쪽 border callout으로 표시한다.
 - 인쇄 시에는 sidebar, backlinks, graph, navigation을 숨긴다.
+
+작성 문법과 Obsidian Reading View 플러그인은 [[Cornell 연결형 Callout]]에 정리한다.
 
 ## 비 Markdown 페이지 공개 필터
 
@@ -152,3 +160,4 @@ Quartz upstream을 업데이트할 때는 최소한 다음을 따로 비교한�
 
 - [[블로그 운영 구조]]
 - [[Publication Manager Sync 플러그인]]
+- [[Cornell 연결형 Callout]]

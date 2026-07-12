@@ -54,8 +54,8 @@ body[data-slug="published-notes.base"] .bases-summary-row td:first-child {
 }
 
 article.cornell {
-  --cornell-cue-width: 170px;
-  --cornell-gap: 30px;
+  --cornell-cue-width: 300px;
+  --cornell-gap: 32px;
   --cornell-main-line: var(--gray);
   --cornell-baseline: 2.2rem;
   --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 60%);
@@ -69,6 +69,7 @@ article.cornell {
 
     @media all and (min-width: 801px) {
       padding-left: calc(var(--cornell-cue-width) + var(--cornell-gap));
+      padding-right: 2rem;
       background-image: linear-gradient(var(--cornell-paper-line) 1px, transparent 1px);
       background-position: 0 1.2rem;
       background-size: 100% var(--cornell-baseline);
@@ -105,8 +106,8 @@ article.cornell {
     }
 
     @media all and (min-width: 801px) and (max-width: 1200px) {
-      --cornell-cue-width: 140px;
-      --cornell-gap: 20px;
+      --cornell-cue-width: 260px;
+      --cornell-gap: 24px;
     }
 
     @media all and ($mobile) {
@@ -220,7 +221,7 @@ article.cornell {
 }
 
 .page:has(article.cornell) {
-  @media all and (min-width: 801px) and (max-width: 1200px) {
+  @media all and (min-width: 801px) {
     .right {
       display: none !important;
     }
@@ -243,6 +244,134 @@ article.cornell .callout[data-callout="summary"] {
   --bg: #00b0ff10;
 }
 
+.cornell-annotation-anchor {
+  position: relative;
+  border-radius: 4px;
+  transition: background-color 120ms ease;
+
+  &.is-cornell-annotation-active {
+    background-color: color-mix(in srgb, var(--secondary), transparent 92%);
+  }
+}
+
+.cornell-annotation-trigger {
+  position: absolute;
+  top: 0.2em;
+  left: calc(-1 * var(--cornell-gap) + 2px);
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--gray);
+  border-radius: 50%;
+  background: var(--light);
+  color: var(--secondary);
+  font-family: var(--bodyFont);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  opacity: 0.72;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    color 120ms ease,
+    opacity 120ms ease;
+
+  &:hover,
+  &:focus-visible,
+  &[aria-expanded="true"] {
+    border-color: var(--secondary);
+    color: var(--secondary);
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+  }
+}
+
+.cornell-annotation-panel {
+  position: fixed;
+  z-index: 1100;
+  top: var(--cornell-panel-top, 1rem);
+  left: var(--cornell-panel-left, 1rem);
+  box-sizing: border-box;
+  width: var(--cornell-panel-width, 300px);
+  max-height: var(--cornell-panel-max-height, 72vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  scrollbar-gutter: stable;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease,
+    visibility 0s linear 120ms;
+
+  &.is-active.is-positioned {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition-delay: 0s;
+  }
+
+  > .callout.cornell-annotation {
+    float: none !important;
+    clear: none !important;
+    width: 100% !important;
+    margin: 0 0 0.75rem !important;
+    padding: 0 1rem !important;
+    border-color: var(--border) !important;
+    background: var(--light) !important;
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--dark), transparent 88%);
+    line-height: 1.55 !important;
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+
+    > .callout-title {
+      padding-right: 1.75rem;
+    }
+  }
+}
+
+.cornell-annotation-close {
+  position: absolute;
+  z-index: 2;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--gray);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--lightgray);
+    color: var(--dark);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--secondary);
+    outline-offset: -2px;
+  }
+}
+
 @media print {
   article.cornell > .markdown-preview-view {
     padding-left: 180px !important;
@@ -263,6 +392,28 @@ article.cornell .callout[data-callout="summary"] {
     > .callout[data-callout="summary"] {
       width: 100% !important;
       margin-left: -180px !important;
+    }
+
+    .cornell-annotation-trigger,
+    .cornell-annotation-close {
+      display: none !important;
+    }
+
+    > .cornell-annotation-panel {
+      position: static !important;
+      width: auto !important;
+      max-height: none !important;
+      margin: 1rem 0 !important;
+      overflow: visible !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+      transform: none !important;
+
+      > .callout.cornell-annotation {
+        break-inside: avoid;
+        box-shadow: none !important;
+      }
     }
   }
 

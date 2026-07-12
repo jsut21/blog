@@ -45,6 +45,23 @@ tags:
 - Use `description`, `socialDescription`, or `socialImage` when a page needs better previews.
 - Use `PUBLICATION-MANAGER.base` to edit publication and staging state across Markdown, Canvas, Base, and Excalidraw content.
 
+## Cornell Notes
+
+- Enable the layout with `cornell: true` in frontmatter.
+- Keep concepts and direct information in normal body blocks.
+- Attach a question, answer, reflection, or related note by giving the body block an ASCII block ID and using the same ID as callout metadata.
+
+```md
+The primary concept belongs in the body. ^concept-id
+
+> [!question|concept-id] Why does this matter?
+> The question and its answer belong in the callout.
+```
+
+- Block IDs may contain Latin letters, numbers, and hyphens.
+- Put an anchored callout directly after its target block so the source remains easy to follow.
+- Use an unanchored `[!summary]` at the end of the note for the full-width summary.
+
 ## Publication Policy By File Type
 
 - Markdown notes are published only when they are outside Quartz ignored paths, have `publish: true`, and do not have `draft: true`.
@@ -96,5 +113,6 @@ If an asset reference is ambiguous or missing, do not guess silently. Surface th
 - For Canvas/Base/Excalidraw coverage, run `npm run sync:publication` and confirm that no control records are missing.
 - For script changes, run `node --check tools/stage-commit-notes.mjs`.
 - For publication-control changes, run `node --check tools/sync-publication-controls.mjs`, `npx tsc --noEmit`, and `npx quartz build`.
-- For the local Obsidian plugin, run `node --check .obsidian/plugins/publication-manager-sync/main.js` and validate its manifest and enabled-plugin JSON.
+- For the publication Obsidian plugin, run `node --check .obsidian/plugins/publication-manager-sync/main.js`.
+- For Cornell Reading View, run `node --check .obsidian/plugins/cornell-anchored-callouts/main.js` and validate its manifest and enabled-plugin JSON.
 - For formatting changes to the staging helpers, run `npx prettier package.json template/frontmatter.md tools/stage-commit-notes.mjs tools/sync-publication-controls.mjs --check`.
