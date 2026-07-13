@@ -157,6 +157,8 @@ npm run quartz -- build --serve
 
 로컬 서버와 hot-reload WebSocket은 기본적으로 `127.0.0.1`에만 bind한다. 다른 장치에서 접속할 필요가 있을 때만 `--host 0.0.0.0`을 명시한다.
 
+asset을 이동하거나 이름을 바꿀 때 watcher에 동일한 삭제 이벤트가 반복되어도 rebuild가 중단되지 않도록 Assets emitter의 삭제 처리는 누락 파일을 허용한다.
+
 ## 마이그레이션 시 보존할 파일
 
 Quartz upstream을 업데이트할 때는 최소한 다음을 따로 비교한다.
@@ -167,6 +169,7 @@ Quartz upstream을 업데이트할 때는 최소한 다음을 따로 비교한�
 - `quartz/styles/custom.scss`
 - `quartz/cli/args.js`
 - `quartz/cli/handlers.js`
+- `quartz/plugins/emitters/assets.ts`
 - `quartz/util/ctx.ts`
 - `tools/stage-commit-notes.mjs`
 - `tools/sync-publication-controls.mjs`
