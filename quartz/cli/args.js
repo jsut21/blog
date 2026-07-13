@@ -102,6 +102,11 @@ export const BuildArgv = {
     default: 8080,
     describe: "port to serve Quartz on",
   },
+  host: {
+    string: true,
+    default: "127.0.0.1",
+    describe: "host interface to bind the local server to",
+  },
   wsPort: {
     number: true,
     default: 3001,

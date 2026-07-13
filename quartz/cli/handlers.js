@@ -562,8 +562,8 @@ export async function handleBuild(argv) {
       }
       throw err
     })
-    server.listen(argv.port)
-    const wss = new WebSocketServer({ port: argv.wsPort })
+    server.listen(argv.port, argv.host)
+    const wss = new WebSocketServer({ port: argv.wsPort, host: argv.host })
     wss.on("error", (err) => {
       if (err.code === "EADDRINUSE") {
         console.error(
@@ -577,7 +577,7 @@ export async function handleBuild(argv) {
     console.log(
       styleText(
         "cyan",
-        `Started a Quartz server listening at http://localhost:${argv.port}${argv.baseDir}`,
+        `Started a Quartz server listening at http://${argv.host}:${argv.port}${argv.baseDir}`,
       ),
     )
   } else {

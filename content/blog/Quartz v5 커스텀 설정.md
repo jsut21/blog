@@ -145,6 +145,18 @@ frontmatter의 `cornell` 값으로 연결형과 classic 모드를 선택한다.
 
 Obsidian 플러그인이 정상 활성화된 환경에서 `sync:publication:*`은 복구와 CI 검증을 위한 fallback이다.
 
+## 로컬 미리보기 서버
+
+로컬 미리보기는 저장소의 Quartz 코드를 직접 실행한다.
+
+```bash
+npm run quartz -- build --serve
+```
+
+`--serve` 빌드는 `index.css`처럼 hash 없는 개발용 asset을 만들고, 일반 `build`는 `index-<hash>.css`처럼 배포용 asset을 만든다. 두 프로세스는 기본적으로 같은 `public/`을 지우고 다시 쓰므로 동시에 실행하면 HTML의 asset 경로와 실제 파일 이름이 섞일 수 있다. 배포 빌드가 필요하면 serve 프로세스를 먼저 종료한다.
+
+로컬 서버와 hot-reload WebSocket은 기본적으로 `127.0.0.1`에만 bind한다. 다른 장치에서 접속할 필요가 있을 때만 `--host 0.0.0.0`을 명시한다.
+
 ## 마이그레이션 시 보존할 파일
 
 Quartz upstream을 업데이트할 때는 최소한 다음을 따로 비교한다.
@@ -153,6 +165,9 @@ Quartz upstream을 업데이트할 때는 최소한 다음을 따로 비교한�
 - `quartz.ts`
 - `custom/`
 - `quartz/styles/custom.scss`
+- `quartz/cli/args.js`
+- `quartz/cli/handlers.js`
+- `quartz/util/ctx.ts`
 - `tools/stage-commit-notes.mjs`
 - `tools/sync-publication-controls.mjs`
 - `package.json` scripts
