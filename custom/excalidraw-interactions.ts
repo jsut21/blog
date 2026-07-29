@@ -11,7 +11,7 @@ export type ExcalidrawViewPoint = {
 
 export const excalidrawMinZoom = 0.1
 export const excalidrawMaxZoom = 20
-export const excalidrawZoomStep = 0.15
+export const excalidrawZoomFactor = 1.15
 
 export function zoomAroundPoint(
   transform: ExcalidrawViewTransform,
@@ -27,12 +27,17 @@ export function zoomAroundPoint(
   }
 }
 
+export function zoomByFactor(currentZoom: number, zoomIn: boolean, factor: number): number {
+  return zoomIn ? currentZoom * factor : currentZoom / factor
+}
+
 export const excalidrawInteractionScript = String.raw`
 ${zoomAroundPoint.toString()}
+${zoomByFactor.toString()}
 
 const EXCALIDRAW_MIN_ZOOM = ${excalidrawMinZoom}
 const EXCALIDRAW_MAX_ZOOM = ${excalidrawMaxZoom}
-const EXCALIDRAW_ZOOM_STEP = ${excalidrawZoomStep}
+const EXCALIDRAW_ZOOM_FACTOR = ${excalidrawZoomFactor}
 
 function initExcalidraw() {
   const framePage = document.querySelector(".page[data-frame='excalidraw']")
@@ -136,9 +141,10 @@ function initPanZoom(page) {
   }
 
   function handleWheel(event) {
+    if (event.deltaY === 0) return
     event.preventDefault()
-    const delta = event.deltaY > 0 ? -EXCALIDRAW_ZOOM_STEP : EXCALIDRAW_ZOOM_STEP
-    setZoomAroundClientPoint(zoom + delta, event.clientX, event.clientY)
+    const nextZoom = zoomByFactor(zoom, event.deltaY < 0, EXCALIDRAW_ZOOM_FACTOR)
+    setZoomAroundClientPoint(nextZoom, event.clientX, event.clientY)
   }
 
   function handleMouseDown(event) {
@@ -164,8 +170,8 @@ function initPanZoom(page) {
   const zoomInButton = page.querySelector(".excalidraw-zoom-in")
   const zoomOutButton = page.querySelector(".excalidraw-zoom-out")
   const resetButton = page.querySelector(".excalidraw-reset")
-  const handleZoomIn = () => zoomAroundCenter(zoom + EXCALIDRAW_ZOOM_STEP)
-  const handleZoomOut = () => zoomAroundCenter(zoom - EXCALIDRAW_ZOOM_STEP)
+  const handleZoomIn = () => zoomAroundCenter(zoomByFactor(zoom, true, EXCALIDRAW_ZOOM_FACTOR))
+  const handleZoomOut = () => zoomAroundCenter(zoomByFactor(zoom, false, EXCALIDRAW_ZOOM_FACTOR))
   const handleReset = () => {
     zoom = 1
     panX = 0

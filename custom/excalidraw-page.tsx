@@ -1,4 +1,10 @@
-import { cloneElement, type VNode } from "preact"
+import {
+  cloneElement,
+  toChildArray,
+  type ComponentChild,
+  type ComponentChildren,
+  type VNode,
+} from "preact"
 
 import type { QuartzComponent } from "../quartz/components/types"
 import type { PageTypePluginEntry } from "../quartz/plugins/types"
@@ -6,6 +12,54 @@ import { excalidrawInteractionScript } from "./excalidraw-interactions"
 
 const darkThemeSelector = /:root\[saved-theme=(?:"dark"|'dark'|dark)\]\s*\{/
 const bundledZoomMarker = "excalidraw-zoom-in"
+const literalStrokeColor = /\bstroke="(#[0-9a-f]{3,8})"/gi
+
+type PatchableVNodeProps = {
+  class?: unknown
+  className?: unknown
+  children?: ComponentChildren
+  dangerouslySetInnerHTML?: { __html?: unknown }
+}
+
+function classValue(props: PatchableVNodeProps): string {
+  if (typeof props.class === "string") return props.class
+  return typeof props.className === "string" ? props.className : ""
+}
+
+export function patchExcalidrawSvgThemeColors(svg: string): string {
+  return svg.replace(literalStrokeColor, (_match, color: string) => {
+    const normalized = color.toLowerCase()
+    return `stroke="var(--excalidraw-color-${normalized.slice(1)}, ${color})"`
+  })
+}
+
+function patchExcalidrawSvgNode(node: ComponentChild): ComponentChild {
+  if (typeof node !== "object" || node === null || !("props" in node)) return node
+
+  const vnode = node as VNode<PatchableVNodeProps>
+  const classNames = classValue(vnode.props).split(/\s+/)
+  if (classNames.includes("excalidraw-container")) {
+    const innerHtml = vnode.props.dangerouslySetInnerHTML
+    if (typeof innerHtml?.__html !== "string") return node
+    return cloneElement(vnode, {
+      dangerouslySetInnerHTML: {
+        ...innerHtml,
+        __html: patchExcalidrawSvgThemeColors(innerHtml.__html),
+      },
+    })
+  }
+
+  const children = toChildArray(vnode.props.children)
+  if (children.length === 0) return node
+
+  let changed = false
+  const patchedChildren = children.map((child) => {
+    const patched = patchExcalidrawSvgNode(child)
+    changed ||= patched !== child
+    return patched
+  })
+  return changed ? cloneElement(vnode, {}, ...patchedChildren) : node
+}
 
 function patchResource(
   resource: string | string[] | undefined,
@@ -51,24 +105,17 @@ function replaceInteractionScript(resource: string | string[] | undefined) {
   })
 }
 
-function withDarkDrawingClass(component: QuartzComponent): QuartzComponent {
+function withDrawingEnhancements(component: QuartzComponent): QuartzComponent {
   const wrapped: QuartzComponent = (props) => {
     const rendered = component(props)
     const options = props.fileData.excalidrawOptions as { darkMode?: unknown } | undefined
-    if (options?.darkMode !== "dark" || typeof rendered !== "object" || rendered === null) {
-      return rendered
-    }
+    if (typeof rendered !== "object" || rendered === null) return rendered
 
-    const vnode = rendered as VNode<{ class?: unknown; className?: unknown }>
-    const currentClass =
-      typeof vnode.props.class === "string"
-        ? vnode.props.class
-        : typeof vnode.props.className === "string"
-          ? vnode.props.className
-          : ""
+    const patched = patchExcalidrawSvgNode(rendered) as VNode<PatchableVNodeProps>
+    if (options?.darkMode !== "dark") return patched
 
-    return cloneElement(vnode, {
-      class: [currentClass, "excalidraw-theme-dark"].filter(Boolean).join(" "),
+    return cloneElement(patched, {
+      class: [classValue(patched.props), "excalidraw-theme-dark"].filter(Boolean).join(" "),
     })
   }
 
@@ -94,7 +141,7 @@ export function patchExcalidrawPage(pageTypes: PageTypePluginEntry[] | undefined
         throw new Error("The Excalidraw interaction script changed; verify the pan and zoom patch")
       }
 
-      const wrapped = withDarkDrawingClass(component)
+      const wrapped = withDrawingEnhancements(component)
       wrapped.css = css.value
       wrapped.afterDOMLoaded = script.value
       return wrapped
