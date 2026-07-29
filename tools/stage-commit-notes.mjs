@@ -204,8 +204,13 @@ function markdownAssetTargets(content) {
   return values
 }
 
-function isExcalidrawMarkdown(filePath) {
-  return filePath.toLowerCase().endsWith(".excalidraw.md")
+function isExcalidrawMarkdown(filePath, frontmatter) {
+  if (filePath.toLowerCase().endsWith(".excalidraw.md")) return true
+  if (!frontmatter || typeof frontmatter !== "object") return false
+  if (!Object.prototype.hasOwnProperty.call(frontmatter, "excalidraw-plugin")) return false
+
+  const marker = frontmatter["excalidraw-plugin"]
+  return marker !== false && marker !== null && marker !== undefined
 }
 
 function excalidrawMarkdownAssetTargets(content) {
@@ -377,7 +382,9 @@ function main() {
     const targets = [
       ...frontmatterAssetTargets(parsed.data),
       ...markdownAssetTargets(parsed.content),
-      ...(isExcalidrawMarkdown(noteAbs) ? excalidrawMarkdownAssetTargets(parsed.content) : []),
+      ...(isExcalidrawMarkdown(noteAbs, parsed.data)
+        ? excalidrawMarkdownAssetTargets(parsed.content)
+        : []),
     ]
 
     for (const target of targets) {

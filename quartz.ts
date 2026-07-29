@@ -2,6 +2,8 @@ import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/conf
 import { PageTypes } from "./quartz/plugins"
 import BlogFooter from "./custom/BlogFooter"
 import { BlogCustomizations, withKoreanOgFonts } from "./custom/blog-customizations"
+import { ExcalidrawMarkdownCompatibility } from "./custom/excalidraw-markdown"
+import { patchExcalidrawPage } from "./custom/excalidraw-page"
 import { patchGraphSlugDecoding } from "./custom/graph-slug-decoding"
 import { applyPublicationControls } from "./custom/publication-controls"
 
@@ -12,6 +14,12 @@ const obsidianIndex = config.plugins.transformers.findIndex(
 )
 const customizationIndex = obsidianIndex === -1 ? config.plugins.transformers.length : obsidianIndex
 config.plugins.transformers.splice(customizationIndex, 0, BlogCustomizations())
+config.plugins.transformers.push(ExcalidrawMarkdownCompatibility())
+
+const excalidrawPages = patchExcalidrawPage(config.plugins.pageTypes)
+if (excalidrawPages === 0) {
+  throw new Error("The Excalidraw page type must be enabled before applying drawing enhancements")
+}
 
 const ogImageIndex = config.plugins.emitters.findIndex((plugin) => plugin.name === "CustomOgImages")
 if (ogImageIndex === -1) {
