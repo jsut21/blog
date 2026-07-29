@@ -45,7 +45,7 @@ ISO/IEC 29500-1의
         - `type="dt"` : 날짜 및 시간
         - `type="sldNum"` : 슬라이드 번호
         - `type="ftr"` : 바닥글
-        - <div style="text-align:center"><p>예시</p><img src="2026-02-26_02-42.png" style="max-width: 100%; height: auto;"></div>
+        - <div style="text-align:center"><p>예시</p><img src="./_assets/2026-02-26_02-42.png" style="max-width: 100%; height: auto;"></div>
 
 - **`<p:spPr>` (시각적 속성)**: 도형의 크기, 위치(x, y 좌표), 채우기 색상, 테두리 선 등의 기하학적 정보를 정의한다.
 - **`<p:txBody>` (텍스트 본문)**: 도형 내부에 포함된 실제 텍스트 데이터 영역이다.
@@ -56,11 +56,11 @@ ISO/IEC 29500-1의
 
 <div style="text-align: center;">
 <p>일반 텍스트 상자</p>
-<img src="KakaoTalk_20260226_031307321.png" style="max-width: 80%; height: auto;">
+<img src="./_assets/KakaoTalk_20260226_031307321.png" style="max-width: 80%; height: auto;">
 </div>
 <div style="text-align: center;">
 <p>슬라이드 레이아웃</p>
-<img src="KakaoTalk_20260226_031242778.png" style="max-width: 50%; height: auto;">
+<img src="./_assets/KakaoTalk_20260226_031242778.png" style="max-width: 50%; height: auto;">
 </div>
 
 => <mark style="background:#d4b106"><p:ph type="title">이나 <p:ph type="subTitle">로 들어가려면, 사용자가 파워포인트 화면에서 일반 텍스트 상자가 아닌 **슬라이드 레이아웃**을 이용해야 함.</mark>
@@ -80,12 +80,12 @@ ISO/IEC 29500-1의
 
 <div style="text-align: center;">
 <p>예시 테이블 - xml</p>
-<img src="2026-02-26_02-33.png" style="max-width: 80%; height: auto;">
+<img src="./_assets/2026-02-26_02-33.png" style="max-width: 80%; height: auto;">
 </div>
 
 <div style="text-align: center;">
 <p>예시 테이블 - 렌더링</p>
-<img src="2026-02-26_02-49.png" style="max-width: 80%; height: auto;">
+<img src="./_assets/2026-02-26_02-49.png" style="max-width: 80%; height: auto;">
 </div>
 
 => <mark style="background:#d4b106">예시 테이블은 눈으로 볼 때 nested 구조인 것으로 보이지만, xml을 보면 실제로는 테이블 1개이다. nested 형태로 column이나 row를 차지하게 **디자인**(내부 테이블로 보이는 것은 하나의 row와 column 차지, 외부 테이블로 보이는 것은 여러 row와 column 차지) 한 것이나 다름 없다.</mark>

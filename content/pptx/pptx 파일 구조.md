@@ -25,23 +25,23 @@ PPTX 파일은 Microsoft Office Open XML(OOXML) 형식을 따르며, 실제로�
 ### 예시
 <div style="text-align: center;">
 	<p>파일 확장자 변경</p>
-	<img src="Pasted image 20260214173538.png" style="max-width: 30%; height: auto;">
+	<img src="./_assets/Pasted image 20260214173538.png" style="max-width: 30%; height: auto;">
 </div>
 
 <div style="display: flex; gap: 16px;">
   <div style="flex: 1; text-align: center;">
     <p>Before</p>
-    <img src="Pasted image 20260214173510.png" style="max-width: 100%; height: auto;">
+    <img src="./_assets/Pasted image 20260214173510.png" style="max-width: 100%; height: auto;">
   </div>
   <div style="flex: 1; text-align: center;">
     <p>After</p>
-    <img src="Pasted image 20260214173610.png" style="max-width: 100%; height: auto;">
+    <img src="./_assets/Pasted image 20260214173610.png" style="max-width: 100%; height: auto;">
   </div>
 </div>
 
 <div style="text-align: center;">
 	<p>결과</p>
-	<img src="Pasted%20image%2020260214171141.png" style="max-width: 100%; height: auto;">
+	<img src="./_assets/Pasted%20image%2020260214171141.png" style="max-width: 100%; height: auto;">
 </div>
 
 #### 전체 파일 구조
@@ -297,5 +297,5 @@ PPTX 내의 파일들은 서로 독립적으로 존재하는 것이 아니라, 
 - **`_rels/`**: `presentation.xml`이 어떤 슬라이드나 테마를 참조하는지 정의하는<mark style="background:#d4b106"> 관계 파일</mark>(`presentation.xml.rels`)이 들어있다.
 
 <div style="text-align: center;">
-<img src="Pasted%20image%2020260214232520.png" style="max-width: 100%; height: auto;">
+<img src="./_assets/Pasted%20image%2020260214232520.png" style="max-width: 100%; height: auto;">
 </div>

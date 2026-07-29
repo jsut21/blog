@@ -523,6 +523,6 @@ pdf의 경우(OCR/layout/table/assemble/reading-order ... )랑 다르게 상당�
 > 
 > 하지만 pptx를 파싱해서 얻는 정보로 충분하다고 판단해서인지, marker와 docling 모두 파싱 정보만을 이용하는 모습이다.
 > 
-> 여기서 읽기 순서는 python-pptx가 주는 [[Pasted image 20260218030243.png|컬렉션순서]](backmost in z-order and the last shape is topmost)를 그대로 따르고 있다. pptx 문서 작성 시의 순서(+ 도형 앞으로 보내기 / 뒤로 보내기)가 상당히 중요하게 작용할 것 같다.  [# PresentationML Slides - Content - Shape Tree - The first shape in the tree has the lowest z-order and the last shape has the highest.](http://officeopenxml.com/prSlide-shapeTree.php)
+> 여기서 읽기 순서는 python-pptx가 주는 [[./_assets/Pasted image 20260218030243.png|컬렉션순서]](backmost in z-order and the last shape is topmost)를 그대로 따르고 있다. pptx 문서 작성 시의 순서(+ 도형 앞으로 보내기 / 뒤로 보내기)가 상당히 중요하게 작용할 것 같다.  [# PresentationML Slides - Content - Shape Tree - The first shape in the tree has the lowest z-order and the last shape has the highest.](http://officeopenxml.com/prSlide-shapeTree.php)
 > => 렌더링 한 다음 reading-order 모델 이용 고려 or 좌표 정보 이용
 > 

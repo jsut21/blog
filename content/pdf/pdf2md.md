@@ -19,7 +19,7 @@ PDF를 마크다운으로 변환시키는 과정에서 개선할 만한 부분�
 		- LaTeX OCR
 	- <mark style="background:#d4b106">'SURYA OCR -> 초안 -> [LLM 이용 수정/보완] -> 최종 결과물' 과정</mark>을 거쳐 결과물을 만들어 냄
 - **Docling (IBM)**: IBM에서 출시한 도구
-	- ![[Pasted image 20260202234008.png]] 
+	- ![[./_assets/Pasted image 20260202234008.png]]
 	- 위 이미지와 같은 과정을 거쳐 결과물을 만들어 냄. [docling technical report](https://arxiv.org/pdf/2408.09869v5)
 	- Parse PDF pages 단계는 [docling-parse](https://github.com/docling-project/docling-parse)(open-source a custom-built PDF parser, which is based on the low-level qpdf library. )를 이용해서 파싱 + pypdfium2를 이용해서 페이지 이미지 렌더링
 	- ocr은 서드파티 이용(surya도 이용할 수 있지만 이용한다면 Text Detection + recognition만 surya 이용됨)
@@ -48,7 +48,7 @@ PDF를 마크다운으로 변환시키는 과정에서 개선할 만한 부분�
 
 1. 이미지 정보를 이용해 적절하게 <mark style="background:#d4b106">각 부분이 어떤 것인지 판단</mark>해낸다
 2. 판단해 낸 부분에 이전 단계에서 얻어낸 정보를 입힌다. + 누락 보정..
-- ![[Pasted image 20260203003547.png]]
+- ![[./_assets/Pasted image 20260203003547.png]]
 
 #### Table Structure 단계에서는
 
