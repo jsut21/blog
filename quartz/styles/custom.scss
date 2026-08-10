@@ -41,6 +41,14 @@
   }
 }
 
+code.mermaid .cluster-label foreignObject > div,
+code.mermaid .cluster-label .nodeLabel,
+code.mermaid .cluster-label .nodeLabel p {
+  white-space: nowrap !important;
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+}
+
 body[data-slug="published-notes.base"] .bases-summary-row td:first-child {
   font-weight: 600;
 
@@ -55,7 +63,6 @@ body[data-slug="published-notes.base"] .bases-summary-row td:first-child {
 
 article.cornell {
   --cornell-marker-gutter: 32px;
-  --cornell-rail-offset: 13px;
   --cornell-main-line: var(--gray);
   --cornell-baseline: 2.2rem;
   --cornell-paper-line: color-mix(in srgb, var(--lightgray), transparent 84%);
@@ -82,18 +89,6 @@ article.cornell {
       > pre {
         margin-top: 0 !important;
         margin-bottom: var(--cornell-baseline) !important;
-      }
-
-      &::after {
-        position: absolute;
-        z-index: 0;
-        top: var(--cornell-rail-top, 0);
-        right: var(--cornell-rail-offset);
-        bottom: var(--cornell-rail-bottom, 100%);
-        width: 1px;
-        background: var(--cornell-rail-line);
-        content: "";
-        pointer-events: none;
       }
 
       > h2 {

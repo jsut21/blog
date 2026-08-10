@@ -6,11 +6,6 @@ export type CornellPanelPlacement = {
   side: "right" | "left" | "overlay"
 }
 
-export type CornellRailBounds = {
-  top: number
-  bottom: number
-}
-
 type CornellPanelPlacementOptions = {
   targetTop: number
   targetLeft: number
@@ -25,33 +20,11 @@ type CornellPanelPlacementOptions = {
   minVisibleHeight?: number
 }
 
-type CornellRailBoundsOptions = {
-  rootTop: number
-  rootBottom: number
-  markerCenters: number[]
-}
-
 export function parseCornellTargetMetadata(value: unknown): string | null {
   if (typeof value !== "string") return null
 
   const match = value.trim().match(/^(?:target=)?([A-Za-z0-9-]+)$/i)
   return match?.[1].toLowerCase() ?? null
-}
-
-export function getCornellRailBounds({
-  rootTop,
-  rootBottom,
-  markerCenters,
-}: CornellRailBoundsOptions): CornellRailBounds | null {
-  const centers = markerCenters.filter(Number.isFinite)
-  if (centers.length === 0 || rootBottom <= rootTop) return null
-
-  const firstCenter = Math.max(rootTop, Math.min(...centers))
-  const lastCenter = Math.min(rootBottom, Math.max(...centers))
-  return {
-    top: firstCenter - rootTop,
-    bottom: rootBottom - lastCenter,
-  }
 }
 
 export function getCornellPanelPlacement({
@@ -105,7 +78,6 @@ export function getCornellPanelPlacement({
 
 export const cornellCalloutScript = String.raw`
 ${parseCornellTargetMetadata.toString()}
-${getCornellRailBounds.toString()}
 ${getCornellPanelPlacement.toString()}
 
 const cornellRootSelector = "article.cornell > .markdown-preview-view"
@@ -147,7 +119,6 @@ function initializeCornellCallouts() {
     let openTimer = 0
     let closeTimer = 0
     let positionFrame = 0
-    let railFrame = 0
 
     function clearOpenTimer() {
       window.clearTimeout(openTimer)
@@ -200,32 +171,6 @@ function initializeCornellCallouts() {
       positionFrame = window.requestAnimationFrame(() => positionRecord(activeRecord))
     }
 
-    function updateRailBounds() {
-      const rootRect = root.getBoundingClientRect()
-      const markerCenters = records.map((record) => {
-        const markerRect = record.trigger.getBoundingClientRect()
-        return markerRect.top + markerRect.height / 2
-      })
-      const bounds = getCornellRailBounds({
-        rootTop: rootRect.top,
-        rootBottom: rootRect.bottom,
-        markerCenters,
-      })
-
-      if (!bounds) {
-        root.style.removeProperty("--cornell-rail-top")
-        root.style.removeProperty("--cornell-rail-bottom")
-        return
-      }
-
-      root.style.setProperty("--cornell-rail-top", bounds.top + "px")
-      root.style.setProperty("--cornell-rail-bottom", bounds.bottom + "px")
-    }
-
-    function scheduleRailBounds() {
-      window.cancelAnimationFrame(railFrame)
-      railFrame = window.requestAnimationFrame(updateRailBounds)
-    }
 
     function deactivate(record) {
       if (!record) return
@@ -358,30 +303,20 @@ function initializeCornellCallouts() {
       closeButton.addEventListener(
         "click",
         () => {
-          deactivate(record)
           trigger.focus({ preventScroll: true })
+          deactivate(record)
         },
         { signal: controller.signal },
       )
     }
 
-    const railObserver =
-      typeof window.ResizeObserver === "function"
-        ? new window.ResizeObserver(scheduleRailBounds)
-        : null
-    railObserver?.observe(root)
-    scheduleRailBounds()
-
-    const onResize = () => {
-      schedulePosition()
-      scheduleRailBounds()
-    }
+    const onResize = schedulePosition
 
     const onKeyDown = (event) => {
       if (event.key !== "Escape" || !activeRecord) return
-      const trigger = activeRecord.trigger
-      deactivate(activeRecord)
-      trigger.focus({ preventScroll: true })
+      const record = activeRecord
+      record.trigger.focus({ preventScroll: true })
+      deactivate(record)
     }
 
     document.addEventListener("keydown", onKeyDown, { signal: controller.signal })
@@ -397,8 +332,6 @@ function initializeCornellCallouts() {
       window.cancelAnimationFrame(positionFrame)
       controller.abort()
 
-      window.cancelAnimationFrame(railFrame)
-      railObserver?.disconnect()
       for (const record of records) {
         for (const { callout, placeholder } of record.placeholders) {
           callout.classList.remove("cornell-annotation")
@@ -415,8 +348,6 @@ function initializeCornellCallouts() {
       root.classList.remove("cornell-annotations-ready")
       delete root.dataset.cornellAnnotationsReady
 
-      root.style.removeProperty("--cornell-rail-top")
-      root.style.removeProperty("--cornell-rail-bottom")
     }
 
     if (typeof window.addCleanup === "function") window.addCleanup(cleanup)

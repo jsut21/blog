@@ -6,7 +6,7 @@ This repository is an Obsidian vault published with Quartz.
 
 - Treat `content/` as the public note source that Quartz builds into the blog.
 - Treat `.obsidian/`, `node_modules/`, `public/`, `.quartz-cache/`, `private/`, and `copilot/` as local/generated/private state. They are ignored by Git.
-- Treat `content/분류 전/`, `content/archive/`, and `content/claude code 활용/` as WIP note areas. Quartz ignores them for publication, though Git may still track files there when explicitly committed.
+- Treat `content/분류 전/`, `content/Archive/`, and `content/claude code 활용/` as WIP note areas. `분류 전/` and `Archive/` remain in Quartz's source tree so Publication Manager can decide their visibility; `claude code 활용/` stays ignored by Quartz.
 - Treat `content/_publication/` as technical Markdown control records for non-Markdown pages. Quartz reads their state but never emits the control records as pages.
 - Do not assume every untracked file under `content/` is intended for publication or commit.
 
@@ -68,11 +68,11 @@ The primary concept belongs in the body. ^concept-id
 
 - Markdown notes are published only when they are outside Quartz ignored paths, have `publish: true`, and do not have `draft: true`.
 - `commit: true` is only for Git staging. It does not publish a note.
-- Current Quartz ignored WIP paths include `content/분류 전/`, `content/archive/`, and `content/claude code 활용/`.
+- Current Quartz ignored WIP paths include only `content/claude code 활용/` (plus the private/template paths in `quartz.config.yaml`). `분류 전/` and `Archive/` are filtered by publication state instead.
 - `.canvas`, `.base`, `.excalidraw`, and `.excalidraw.md` files require a matching Markdown record under `content/_publication/`. Quartz renders them only when that record has `publish: true` and does not have `draft: true`.
 - The local `publication-manager-sync` Obsidian plugin creates, renames, and trashes those control records as managed files change.
 - Use `npm run sync:publication`, `npm run sync:publication:apply`, and `npm run sync:publication:prune` as command-line verification and recovery tools when Obsidian is not running.
-- Assets under non-ignored `content/` paths can still be copied by Quartz. Keep private or WIP assets in ignored paths or outside `content/`.
+- Quartz copies a non-Markdown asset only when a published Markdown, Canvas, Base, or Excalidraw page references it. Unreferenced assets are not emitted, and a watch rebuild removes an asset when its last published reference disappears. Keep secrets outside `content/` even when they are currently unreferenced.
 
 ## Commit Selection Policy
 
@@ -85,6 +85,8 @@ This repo uses frontmatter to decide which notes should be staged for commit.
 - Never use broad commands like `git add content`, `git add content/분류 전`, or `git add .` for note commits unless the user explicitly asks for that exact broad scope.
 - Prefer `npm run stage:notes` to preview selected notes and referenced assets.
 - Use `npm run stage:notes:apply` to stage only notes with `commit: true` and their referenced local assets.
+- Use `npm run stage:publication` to preview `commit: true` content plus all non-content changes.
+- Use `npm run stage:publication:apply` to stage that combined scope; ignored local/generated paths remain excluded.
 
 The staging helper is `tools/stage-commit-notes.mjs`.
 
@@ -107,7 +109,7 @@ If an asset reference is ambiguous or missing, do not guess silently. Surface th
 - Before staging or committing, run `git status --short` and inspect untracked content.
 - If only selected notes should be committed, stage through `npm run stage:notes:apply` or explicit file paths.
 - Do not revert or delete untracked notes unless the user explicitly asks.
-- Remember that many notes under `content/분류 전/`, `content/archive/`, and similar folders may be local work-in-progress.
+- Remember that many notes under `content/분류 전/`, `content/Archive/`, and similar folders may be local work-in-progress.
 
 ## Verification
 

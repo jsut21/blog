@@ -7,6 +7,7 @@ import type { QuartzFilterPlugin } from "../quartz/plugins/types"
 import type { ProcessedContent } from "../quartz/plugins/vfile"
 import type { BuildCtx } from "../quartz/util/ctx"
 import { type FilePath, slugifyFilePath } from "../quartz/util/path"
+import { PublicationAwareAssets } from "./publication-assets"
 
 const controlsDirectory = "_publication"
 const controlledFileTypes = [
@@ -195,6 +196,11 @@ const PublicationControlRecords: QuartzFilterPlugin = () => ({
 
 export function applyPublicationControls(config: QuartzConfig): void {
   config.plugins.filters.unshift(PublicationControlRecords())
+
+  const assetsIndex = config.plugins.emitters.findIndex((plugin) => plugin.name === "Assets")
+  if (assetsIndex !== -1) {
+    config.plugins.emitters[assetsIndex] = PublicationAwareAssets()
+  }
 
   const basesTransformer = config.plugins.transformers.find(
     (plugin) => plugin.name === "BasesTransformer",

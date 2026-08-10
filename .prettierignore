@@ -1,3 +1,6 @@
 public
 node_modules
 .quartz-cache
+template/center-image.md
+template/center-image-with-caption.md
+template/mark-tooltip.md

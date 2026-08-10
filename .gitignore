@@ -13,3 +13,10 @@ replit.nix
 .quartz/
 quartz/cli/tui/dist/
 copilot/
+
+# Local vault/plugin state and workspace artifacts
+.claudian/
+.hinote/
+.infio_json_db/
+/.codex-preview-desktop.png
+/-

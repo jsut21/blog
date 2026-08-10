@@ -12,8 +12,6 @@ configuration:
     - private
     - templates
     - .obsidian
-    - archive
-    - 분류 전
     - claude code 활용
   theme:
     fontOrigin: googleFonts

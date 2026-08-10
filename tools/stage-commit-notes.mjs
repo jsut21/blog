@@ -40,6 +40,7 @@ function parseArgs(argv) {
     stage: false,
     key: "commit",
     verbose: false,
+    includeNonContent: false,
   }
 
   for (let i = 0; i < argv.length; i++) {
@@ -48,6 +49,8 @@ function parseArgs(argv) {
       opts.stage = true
     } else if (arg === "--verbose") {
       opts.verbose = true
+    } else if (arg === "--include-non-content") {
+      opts.includeNonContent = true
     } else if (arg === "--key") {
       opts.key = argv[++i] ?? opts.key
     } else if (arg.startsWith("--key=")) {
@@ -75,6 +78,8 @@ Options:
   --stage, --apply   Run git add. Without this, only prints a dry run.
   --key <name>       Frontmatter boolean key to read. Default: commit
   --verbose          Print skipped references.
+  --include-non-content
+                     Also stage all non-content changes (ignored files remain excluded).
   -h, --help         Show this help.
 `)
 }
@@ -342,6 +347,23 @@ function isEnabled(value) {
   return value === true || value === "true" || value === "yes" || value === 1
 }
 
+function nonContentStatus() {
+  const result = spawnSync(
+    "git",
+    ["status", "--short", "--untracked-files=all", "--", ".", ":(exclude)content/**"],
+    {
+      cwd: root,
+      encoding: "utf8",
+    },
+  )
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr?.trim() || "Unable to inspect non-content Git status")
+  }
+
+  return result.stdout.trim() ? result.stdout.trimEnd().split("\n") : []
+}
+
 function main() {
   const opts = parseArgs(process.argv.slice(2))
 
@@ -399,6 +421,7 @@ function main() {
   const relNotes = noteList.map(relFromRoot)
   const relAssets = assetList.map(relFromRoot)
   const relFiles = filesToStage.map(relFromRoot)
+  const nonContentFiles = opts.includeNonContent ? nonContentStatus() : []
 
   console.log(`Frontmatter key: ${opts.key}: true`)
   console.log(`Mode: ${opts.stage ? "stage" : "dry-run"}`)
@@ -414,33 +437,57 @@ function main() {
   if (relAssets.length === 0) console.log("  (none)")
   console.log("")
 
+  if (opts.includeNonContent) {
+    console.log(`Non-content changes (${nonContentFiles.length}):`)
+    for (const file of nonContentFiles) console.log(`  ${file}`)
+    if (nonContentFiles.length === 0) console.log("  (none)")
+    console.log("")
+  }
+
   if (warnings.length > 0) {
     console.log(`Warnings (${warnings.length}):`)
     for (const warning of warnings) console.log(`  - ${warning}`)
     console.log("")
   }
 
-  if (relFiles.length === 0) {
+  if (relFiles.length === 0 && nonContentFiles.length === 0) {
     console.log("Nothing to stage.")
     return
   }
 
   if (!opts.stage) {
     console.log("Dry run only. To stage these files, run:")
-    console.log("  npm run stage:notes:apply")
+    console.log(
+      opts.includeNonContent ? "  npm run stage:publication:apply" : "  npm run stage:notes:apply",
+    )
     return
   }
 
-  const result = spawnSync("git", ["add", "--", ...relFiles], {
-    cwd: root,
-    stdio: "inherit",
-  })
+  if (nonContentFiles.length > 0) {
+    const nonContentResult = spawnSync("git", ["add", "--all", "--", ".", ":(exclude)content/**"], {
+      cwd: root,
+      stdio: "inherit",
+    })
 
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1)
+    if (nonContentResult.status !== 0) {
+      process.exit(nonContentResult.status ?? 1)
+    }
   }
 
-  console.log(`Staged ${relFiles.length} file(s).`)
+  if (relFiles.length > 0) {
+    const result = spawnSync("git", ["add", "--", ...relFiles], {
+      cwd: root,
+      stdio: "inherit",
+    })
+
+    if (result.status !== 0) {
+      process.exit(result.status ?? 1)
+    }
+  }
+
+  console.log(
+    `Staged ${relFiles.length} selected content file(s) and ${nonContentFiles.length} non-content path(s).`,
+  )
 }
 
 main()

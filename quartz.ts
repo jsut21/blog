@@ -6,7 +6,9 @@ import { ExcalidrawMarkdownCompatibility } from "./custom/excalidraw-markdown"
 import { patchExcalidrawPage } from "./custom/excalidraw-page"
 import { patchGraphSlugDecoding } from "./custom/graph-slug-decoding"
 import { applyPublicationControls } from "./custom/publication-controls"
+import { configureOrderedExplorer } from "./custom/ordered-explorer-config"
 
+configureOrderedExplorer()
 const config = await loadQuartzConfig()
 
 const obsidianIndex = config.plugins.transformers.findIndex(

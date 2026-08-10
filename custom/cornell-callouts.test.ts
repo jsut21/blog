@@ -4,21 +4,8 @@ import test from "node:test"
 import {
   cornellCalloutScript,
   getCornellPanelPlacement,
-  getCornellRailBounds,
   parseCornellTargetMetadata,
 } from "./cornell-callouts"
-
-test("limits the annotation rail to the first and last marker centers", () => {
-  assert.deepEqual(
-    getCornellRailBounds({
-      rootTop: 200,
-      rootBottom: 1000,
-      markerCenters: [320, 760, 500],
-    }),
-    { top: 120, bottom: 240 },
-  )
-  assert.equal(getCornellRailBounds({ rootTop: 200, rootBottom: 1000, markerCenters: [] }), null)
-})
 
 test("parses explicit Cornell callout targets", () => {
   assert.equal(parseCornellTargetMetadata("publish-policy"), "publish-policy")
@@ -118,4 +105,31 @@ test("overlays the annotation when neither side has enough space", () => {
 test("emits syntactically valid standalone browser code", () => {
   assert.doesNotThrow(() => new Function(cornellCalloutScript))
   assert.match(cornellCalloutScript, /initializeCornellCallouts/)
+})
+
+test("restores focus before deactivating an annotation", () => {
+  const assertAppearsBefore = (source: string, before: string, after: string) => {
+    const beforeIndex = source.indexOf(before)
+    const afterIndex = source.indexOf(after)
+    assert.notEqual(beforeIndex, -1)
+    assert.notEqual(afterIndex, -1)
+    assert.ok(beforeIndex < afterIndex)
+  }
+
+  const closeStart = cornellCalloutScript.indexOf("closeButton.addEventListener")
+  const resizeStart = cornellCalloutScript.indexOf("const onResize", closeStart)
+  assert.notEqual(closeStart, -1)
+  assert.notEqual(resizeStart, -1)
+  const closeHandler = cornellCalloutScript.slice(closeStart, resizeStart)
+  assertAppearsBefore(closeHandler, "trigger.focus", "deactivate(record)")
+
+  const escapeStart = cornellCalloutScript.indexOf("const onKeyDown")
+  const listenerStart = cornellCalloutScript.indexOf(
+    'document.addEventListener("keydown"',
+    escapeStart,
+  )
+  assert.notEqual(escapeStart, -1)
+  assert.notEqual(listenerStart, -1)
+  const escapeHandler = cornellCalloutScript.slice(escapeStart, listenerStart)
+  assertAppearsBefore(escapeHandler, "record.trigger.focus", "deactivate(record)")
 })

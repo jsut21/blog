@@ -586,16 +586,32 @@ export async function handleBuild(argv) {
   }
 
   if (argv.watch) {
-    const paths = await globby([
-      "**/*.ts",
-      "quartz/cli/*.js",
-      "quartz/static/**/*",
-      "**/*.tsx",
-      "**/*.scss",
-      "package.json",
-      "quartz.config.yaml",
-      "quartz.config.default.yaml",
-    ])
+    const toIgnoredWatchGlob = (root) => {
+      const relative = path.relative(process.cwd(), path.resolve(root)).split(path.sep).join("/")
+      if (relative === "" || relative === ".." || relative.startsWith("../")) return null
+      return `${relative}/**`
+    }
+    const ignoredWatchGlobs = [
+      "**/node_modules/**",
+      ".git/**",
+      ".quartz-cache/**",
+      ".obsidian/**",
+      toIgnoredWatchGlob(argv.directory),
+      toIgnoredWatchGlob(argv.output),
+    ].filter(Boolean)
+    const paths = await globby(
+      [
+        "**/*.ts",
+        "quartz/cli/*.js",
+        "quartz/static/**/*",
+        "**/*.tsx",
+        "**/*.scss",
+        "package.json",
+        "quartz.config.yaml",
+        "quartz.config.default.yaml",
+      ],
+      { ignore: ignoredWatchGlobs },
+    )
     chokidar
       .watch(paths, { ignoreInitial: true })
       .on("add", () => build(clientRefresh))

@@ -22,6 +22,8 @@
     "prebuild": "npm run install-plugins",
     "stage:notes": "node tools/stage-commit-notes.mjs",
     "stage:notes:apply": "node tools/stage-commit-notes.mjs --stage",
+    "stage:publication": "node tools/stage-commit-notes.mjs --include-non-content",
+    "stage:publication:apply": "node tools/stage-commit-notes.mjs --include-non-content --stage",
     "sync:publication": "node tools/sync-publication-controls.mjs",
     "sync:publication:apply": "node tools/sync-publication-controls.mjs --write",
     "sync:publication:prune": "node tools/sync-publication-controls.mjs --prune"
