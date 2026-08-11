@@ -41,6 +41,7 @@ function parseArgs(argv) {
     key: "commit",
     verbose: false,
     includeNonContent: false,
+    includeDeletions: false,
   }
 
   for (let i = 0; i < argv.length; i++) {
@@ -51,6 +52,8 @@ function parseArgs(argv) {
       opts.verbose = true
     } else if (arg === "--include-non-content") {
       opts.includeNonContent = true
+    } else if (arg === "--include-deletions") {
+      opts.includeDeletions = true
     } else if (arg === "--key") {
       opts.key = argv[++i] ?? opts.key
     } else if (arg.startsWith("--key=")) {
@@ -80,6 +83,8 @@ Options:
   --verbose          Print skipped references.
   --include-non-content
                      Also stage all non-content changes (ignored files remain excluded).
+  --include-deletions
+                     Also include tracked content files that are missing from the working tree.
   -h, --help         Show this help.
 `)
 }
@@ -364,6 +369,19 @@ function nonContentStatus() {
   return result.stdout.trim() ? result.stdout.trimEnd().split("\n") : []
 }
 
+function trackedContentDeletions() {
+  const result = spawnSync("git", ["ls-files", "--deleted", "-z", "--", "content"], {
+    cwd: root,
+    encoding: "utf8",
+  })
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr?.trim() || "Unable to inspect deleted content files")
+  }
+
+  return result.stdout.split("\0").filter(Boolean)
+}
+
 function main() {
   const opts = parseArgs(process.argv.slice(2))
 
@@ -420,7 +438,8 @@ function main() {
   const filesToStage = [...noteList, ...assetList]
   const relNotes = noteList.map(relFromRoot)
   const relAssets = assetList.map(relFromRoot)
-  const relFiles = filesToStage.map(relFromRoot)
+  const relDeleted = opts.includeDeletions ? trackedContentDeletions() : []
+  const relFiles = [...new Set([...filesToStage.map(relFromRoot), ...relDeleted])]
   const nonContentFiles = opts.includeNonContent ? nonContentStatus() : []
 
   console.log(`Frontmatter key: ${opts.key}: true`)
@@ -436,6 +455,13 @@ function main() {
   for (const file of relAssets) console.log(`  ${file}`)
   if (relAssets.length === 0) console.log("  (none)")
   console.log("")
+
+  if (opts.includeDeletions) {
+    console.log(`Tracked content deletions (${relDeleted.length}):`)
+    for (const file of relDeleted) console.log(`  ${file}`)
+    if (relDeleted.length === 0) console.log("  (none)")
+    console.log("")
+  }
 
   if (opts.includeNonContent) {
     console.log(`Non-content changes (${nonContentFiles.length}):`)
@@ -486,7 +512,7 @@ function main() {
   }
 
   console.log(
-    `Staged ${relFiles.length} selected content file(s) and ${nonContentFiles.length} non-content path(s).`,
+    `Staged ${relFiles.length} content path(s) (${relDeleted.length} deletion(s)) and ${nonContentFiles.length} non-content path(s).`,
   )
 }
 

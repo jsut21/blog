@@ -85,8 +85,9 @@ This repo uses frontmatter to decide which notes should be staged for commit.
 - Never use broad commands like `git add content`, `git add content/분류 전`, or `git add .` for note commits unless the user explicitly asks for that exact broad scope.
 - Prefer `npm run stage:notes` to preview selected notes and referenced assets.
 - Use `npm run stage:notes:apply` to stage only notes with `commit: true` and their referenced local assets.
-- Use `npm run stage:publication` to preview `commit: true` content plus all non-content changes.
-- Use `npm run stage:publication:apply` to stage that combined scope; ignored local/generated paths remain excluded.
+- Use `npm run stage:publication` to preview `commit: true` content, tracked content deletions, and all non-content changes.
+- Use `npm run stage:publication:apply` to stage that combined reconciliation scope; ignored local/generated paths remain excluded.
+- Tracked content deletions are included because moving or removing a note must update the remote tree; review the dry-run deletion list before applying it.
 
 The staging helper is `tools/stage-commit-notes.mjs`.
 
