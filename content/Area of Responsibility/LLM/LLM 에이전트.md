@@ -1,11 +1,14 @@
 ---
 created: 2026-07-09
+postId: post-llm-agent-v1
 draft: false
 publish: true
 commit: true
 assets:
-  - "./_assets/Pasted image 20260713110339.png"
+  - ./_assets/Pasted image 20260713110339.png
+discussionNumber: 22
 ---
+
 결국 LLM은 컨텍스트를 입력받고, 확률적으로 그럴법한 토큰을 뱉어내는 것에 불과하다.(주어진 컨텍스트에 조건부로 다음 토큰의 확률분포를 계산하고, 디코딩 방식에 따라 토큰을 선택) 하지만 꽤 유용하므로 잘 쓸 수 있는 방안을 고민 / 알아보자.
 
 # LLM 에이전트
@@ -28,26 +31,23 @@ LLM은 본질적으로 수많은 정보의 빈칸 채우기를 통해서 학습�
 
 현 시점 대표적인 frontier 모델들의 knowledge cutoff를 살펴보면 다음과 같다.
 
-
-| 모델              | 버전/변형                                      | Knowledge cutoff(공개 문서 기준) | 출처                                                                                                                                                                                                                                                           |
-| --------------- | ------------------------------------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GPT-5.6         | `gpt-5.6`, `gpt-5.6-terra`, `gpt-5.6-luna` | 2026-02-16                 | [OpenAI API: GPT-5.6](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)                   |
-| GPT-5.5         | `gpt-5.5`                                  | 2025-12-01                 | [OpenAI API: GPT-5.5](https://developers.openai.com/api/docs/models/gpt-5.5)                                                                                                                                                                                 |
-| Claude Fable 5  | `claude-fable-5`                           | January 2026               | [Anthropic Help Center: training data cutoff](https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data), [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce) |
-| Claude Mythos 5 | `claude-mythos-5`                          | January 2026               | [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce)                                                                                                                                         |
-| Claude Opus 4.8 | `claude-opus-4.8`                          | January 2026               | [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce)                                                                                                                                         |
+| 모델            | 버전/변형                                  | Knowledge cutoff(공개 문서 기준) | 출처                                                                                                                                                                                                                                                         |
+| --------------- | ------------------------------------------ | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GPT-5.6         | `gpt-5.6`, `gpt-5.6-terra`, `gpt-5.6-luna` | 2026-02-16                       | [OpenAI API: GPT-5.6](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [GPT-5.6 Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), [GPT-5.6 Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna)                   |
+| GPT-5.5         | `gpt-5.5`                                  | 2025-12-01                       | [OpenAI API: GPT-5.5](https://developers.openai.com/api/docs/models/gpt-5.5)                                                                                                                                                                                 |
+| Claude Fable 5  | `claude-fable-5`                           | January 2026                     | [Anthropic Help Center: training data cutoff](https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data), [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce) |
+| Claude Mythos 5 | `claude-mythos-5`                          | January 2026                     | [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce)                                                                                                                                         |
+| Claude Opus 4.8 | `claude-opus-4.8`                          | January 2026                     | [Anthropic Transparency Hub](https://www.anthropic.com/transparency?_bhlid=3366b91eeaceb766349f1b7ad4eebe6a2a89b8ce)                                                                                                                                         |
 
 ### 동적 지식
 
 이에 반해 <mark style="background:#d4b106">컨텍스트에 정보를 주입해서 알려줄 수 있는 '동적 지식'</mark>이 있다. 최신 문서, 현재 작업 중인 코드, 사용자의 취향, 대화 이력, 도구 호출 결과 등이 여기에 속한다. 컨텍스트에 넣었다고 파라미터가 바뀌는 것은 아니며, 다음 요청에서도 필요하다면 다시 넣어야 한다.
-
 
 <div style="text-align: center;">
 <img src="./_assets/llm-context-window-components.png" style="max-width: 100%; height: auto;">
 <br>
 <small>gpt 생성 이미지</small>
 </div>
-
 
 #### 컨텍스트 관리
 
@@ -61,7 +61,6 @@ LLM은 매 토큰을 생성할 때 <mark style="background:#d4b106">현재 컨�
 </small>
 </div>
 
-
 그래서 실제 LLM 활용에서는 <mark style="background:#d4b106">**컨텍스트 관리가 가장 중요한 요소 중 하나**다. 모델 자체의 능력 한계를 없앨 수는 없지만, 현재 문제에 필요한 사실·제약·작업 상태를 모델이 보게 만들 수 있다.</mark> 에이전트가 파일을 읽거나 웹을 검색한 뒤 결과를 다시 모델에게 보여주는 과정도 결국 동적 지식을 컨텍스트에 추가하는 과정이다.
 
 컨텍스트 관리는 보통 다음 장치들을 함께 사용한다.
@@ -71,7 +70,6 @@ LLM은 매 토큰을 생성할 때 <mark style="background:#d4b106">현재 컨�
 - **[[요약과 압축]]**: `긴 대화나 작업 로그를` 그대로 누적하지 않고, 결정 사항·제약·미해결 과제를 보존한 `요약`으로 바꾼다.
 - **[[캐싱]]**: 자주 반복되는 시스템 지침이나 큰 문서 `접두사를 재사용해 비용과 지연을 줄인다.`
 - **[[Tool]]**: LLM은 컨텍스트에 제공된 `도구 설명`·입력 스키마·권한을 보고 필요할 때 호출을 제안한다. 런타임이 실제로 외부 시스템을 읽거나 변경한 뒤, 그 결과를 다시 컨텍스트에 넣는다. 따라서 도구는 `동적 지식을 **필요한 시점에 획득·갱신**하는 수단인 동시에 외부 세계에 영향을 주는 행동의 통로`다.
-
 
 #### 컨텍스트 엔지니어링과 프롬프트 엔지니어링
 
@@ -163,7 +161,6 @@ LLM은 기본적으로 텍스트 생성기다.
 - 계속 진행할지, 종료할지, 사람에게 넘길지 판단한다.
 - 필요한 경우 다시 LLM을 호출한다.
 
-
 +시간과 이벤트 관리 : **시간, 상태 변화, 외부 이벤트, 모델 출력 등 시스템이 관찰할 수 있는 모든 조건**이 개입의 계기(LLM 호출)
 
 +검증&안전장치
@@ -173,8 +170,6 @@ LLM은 기본적으로 텍스트 생성기다.
 +서브 에이전트 관리
 
 +상태와 워크플로 관리 : LLM에게 모든 결정을 맡길 수도 있지만. 일반적으로 LLM에는 의미 판단처럼 유연성이 필요한 부분을 맡기고, 런타임에는 순서, 권한, 제한처럼 결정적으로 실행되어야 하는 부분을 맡긴다.
-
-
 
 > [!summary] 정리
 > 컨텍스트는 LLM이 **무엇을 알고 있는지**를 결정한다.

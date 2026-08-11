@@ -14,7 +14,7 @@
   "scripts": {
     "quartz": "./quartz/bootstrap-cli.mjs",
     "docs": "npx quartz build --serve -d docs",
-    "check": "tsc --noEmit && npx prettier . --check",
+    "check": "tsc --noEmit && npm run check:comments && npx prettier . --check",
     "format": "npx prettier . --write",
     "test": "tsx --test",
     "profile": "0x -D prof ./quartz/bootstrap-cli.mjs build --concurrency=1",
@@ -26,7 +26,12 @@
     "stage:publication:apply": "node tools/stage-commit-notes.mjs --include-non-content --stage",
     "sync:publication": "node tools/sync-publication-controls.mjs",
     "sync:publication:apply": "node tools/sync-publication-controls.mjs --write",
-    "sync:publication:prune": "node tools/sync-publication-controls.mjs --prune"
+    "sync:publication:prune": "node tools/sync-publication-controls.mjs --prune",
+    "sync:comments": "node tools/sync-comment-discussions.mjs",
+    "sync:comments:remote": "node tools/sync-comment-discussions.mjs --remote",
+    "sync:comments:apply": "node tools/sync-comment-discussions.mjs --apply",
+    "check:comments": "node tools/check-comment-mappings.mjs",
+    "check:comments:strict": "node tools/check-comment-mappings.mjs --require-discussions"
   },
   "engines": {
     "npm": ">=10.9.2",

@@ -1,5 +1,6 @@
 ---
 title: Cornell Note taking method
+postId: post-cornell-test-v1
 cornell: true
 created: 2026-02-08
 tags:
@@ -7,7 +8,9 @@ tags:
   - education
 commit: true
 publish: true
+discussionNumber: 25
 ---
+
 # Cornell 노트 방식
 
 Cornell 노트는 본문에 개념과 정보를 기록하고, 그 내용을 다시 생각하게 만드는 질문이나 연관된 생각을 별도의 영역에 남기는 방식이다. ^cornell-purpose

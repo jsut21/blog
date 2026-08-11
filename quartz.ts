@@ -5,11 +5,13 @@ import { BlogCustomizations, withKoreanOgFonts } from "./custom/blog-customizati
 import { ExcalidrawMarkdownCompatibility } from "./custom/excalidraw-markdown"
 import { patchExcalidrawPage } from "./custom/excalidraw-page"
 import { patchGraphSlugDecoding } from "./custom/graph-slug-decoding"
+import { patchGiscusComments } from "./custom/giscus-comments"
 import { applyPublicationControls } from "./custom/publication-controls"
 import { configureOrderedExplorer } from "./custom/ordered-explorer-config"
 
 configureOrderedExplorer()
 const config = await loadQuartzConfig()
+patchGiscusComments()
 
 const obsidianIndex = config.plugins.transformers.findIndex(
   (plugin) => plugin.name === "ObsidianFlavoredMarkdown",

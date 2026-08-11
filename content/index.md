@@ -1,5 +1,7 @@
 ---
 title: 블로그에 오신것을 환영합니다
+postId: post-home-v1
+discussionNumber: 5
 commit: true
 publish: true
 draft: false

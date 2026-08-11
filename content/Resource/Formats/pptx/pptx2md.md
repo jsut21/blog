@@ -1,9 +1,12 @@
 ---
 created: 2026-02-17
+postId: post-pptx2md-v1
 draft: false
 commit: true
 publish: true
+discussionNumber: 24
 ---
+
 [[pdf2md]]에서와 마찬가지로 pptx2md에서
 
 오픈소스 PPTX to Markdown 변환 도구를 비교해보고,  
@@ -14,6 +17,7 @@ PPTX를 마크다운으로 변환시키는 과정에서 개선할 만한 부분�
 [[pdf2md]]에서의 도구였던, marker와 docling이 pptx2md를 하는 오픈소스 도구 중 하나다.
 
 ### marker
+
 ```python
 import base64
 import os
@@ -276,12 +280,14 @@ class PowerPointProvider(PdfProvider):
 <mark style="background:#d4b106">`PPTX -> HTML 문자열 -> PDF -> 공통 PDF 파이프라인(pdf2md)` 를 거치도록 되어 있다.</mark>
 
 위 코드는 슬라이드에서 다음 pptx 내용들을 html로 바꾸고, html을 pdf로 바꾼다.
+
 - 텍스트(문단/불릿/번호/제목·부제목 placeholder)
 - 표
 - 그림(이미지)
-- 그룹 도형(내부를 재귀적으로 위 3가지로 분해)  
+- 그룹 도형(내부를 재귀적으로 위 3가지로 분해)
 
 ### docling
+
 ```python
 class PowerpointFormatOption(FormatOption):
     pipeline_cls: Type = SimplePipeline
@@ -291,7 +297,8 @@ class PowerpointFormatOption(FormatOption):
 MsPowerpointDocumentBackend로 pptx를 읽고, SimplePipeline을 거치도록 되어 있다.
 
 #### DoclingDocument
-``` python
+
+```python
 class DoclingDocument(BaseModel):
     """DoclingDocument."""
 
@@ -325,16 +332,19 @@ class DoclingDocument(BaseModel):
     ...
 ```
 
-전체 내용은 [DoclingDocument](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py#L2562) 참고.  docling에선 backend에서 파일을 읽어서 DoclingDocument로 내부에서 다룬다.
+전체 내용은 [DoclingDocument](https://github.com/docling-project/docling-core/blob/main/docling_core/types/doc/document.py#L2562) 참고. docling에선 backend에서 파일을 읽어서 DoclingDocument로 내부에서 다룬다.
 
->unified document representation format called `DoclingDocument`. It is defined as a pydantic datatype, which can express several features common to documents, such as:
->* Text, Tables, Pictures, and more
->* Document hierarchy with sections and groups
->* Disambiguation between main body and headers, footers (furniture)
->* Layout information (i.e. bounding boxes) for all items, if available
->* Provenance information
+> unified document representation format called `DoclingDocument`. It is defined as a pydantic datatype, which can express several features common to documents, such as:
+>
+> - Text, Tables, Pictures, and more
+> - Document hierarchy with sections and groups
+> - Disambiguation between main body and headers, footers (furniture)
+> - Layout information (i.e. bounding boxes) for all items, if available
+> - Provenance information
+
 #### MsPowerpointDocumentBackend
-``` python
+
+```python
 	...
 	...
     @override
@@ -446,15 +456,17 @@ pptx파일을 읽는 것 자체는 위 marker와 상당히 유사하다.
 <mark style="background:#d4b106">python-pptx를 이용해서 내용을 읽고, 그것을 슬라이드 단위로 순회해서 DoclingDocument로 옮긴다.</mark>
 
 결과적으로 얻는 것은, 각 슬라이드에서:
+
 - 텍스트(문단/리스트/제목 계열)
 - 표
 - 그림
-- 노트 텍스트(발표자 노트(speaker notes)) 
+- 노트 텍스트(발표자 노트(speaker notes))
 
 이다.
 
 #### SimplePipeline
-``` python
+
+```python
 import logging
 
 from docling.backend.abstract_backend import (
@@ -513,16 +525,17 @@ class SimplePipeline(ConvertPipeline):
 
 ```
 
-pdf의 경우(OCR/layout/table/assemble/reading-order ... )랑 다르게 상당히 별 내용이 없다. 
+pdf의 경우(OCR/layout/table/assemble/reading-order ... )랑 다르게 상당히 별 내용이 없다.
+
 ### 결론
 
 > [!summary] 정리
 > pptx도 입력으로 받을 수 있는 정보는 다음과 같을 것이다.
-> - `파일 구조로부터 얻을 수 있는 정보`(<mark style="background:#d4b106">파싱</mark>해서 얻을 수 있는 정보)와 
-> - `시각적 요소로부터 얻을 수 있는 정보`(렌더링한 <mark style="background:#d4b106">이미지</mark>를 이용해서 얻을 수 있는 정보) 
-> 
+>
+> - `파일 구조로부터 얻을 수 있는 정보`(<mark style="background:#d4b106">파싱</mark>해서 얻을 수 있는 정보)와
+> - `시각적 요소로부터 얻을 수 있는 정보`(렌더링한 <mark style="background:#d4b106">이미지</mark>를 이용해서 얻을 수 있는 정보)
+>
 > 하지만 pptx를 파싱해서 얻는 정보로 충분하다고 판단해서인지, marker와 docling 모두 파싱 정보만을 이용하는 모습이다.
-> 
-> 여기서 읽기 순서는 python-pptx가 주는 [[Pasted image 20260218030243.png|컬렉션순서]](backmost in z-order and the last shape is topmost)를 그대로 따르고 있다. pptx 문서 작성 시의 순서(+ 도형 앞으로 보내기 / 뒤로 보내기)가 상당히 중요하게 작용할 것 같다.  [# PresentationML Slides - Content - Shape Tree - The first shape in the tree has the lowest z-order and the last shape has the highest.](http://officeopenxml.com/prSlide-shapeTree.php)
+>
+> 여기서 읽기 순서는 python-pptx가 주는 [[Pasted image 20260218030243.png|컬렉션순서]](backmost in z-order and the last shape is topmost)를 그대로 따르고 있다. pptx 문서 작성 시의 순서(+ 도형 앞으로 보내기 / 뒤로 보내기)가 상당히 중요하게 작용할 것 같다. [# PresentationML Slides - Content - Shape Tree - The first shape in the tree has the lowest z-order and the last shape has the highest.](http://officeopenxml.com/prSlide-shapeTree.php)
 > => 렌더링 한 다음 reading-order 모델 이용 고려 or 좌표 정보 이용
-> 

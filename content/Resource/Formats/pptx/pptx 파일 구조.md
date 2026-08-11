@@ -1,9 +1,12 @@
 ---
 created: 2026-02-14
+postId: post-pptx-file-structure-v1
+discussionNumber: 8
 draft: false
 commit: true
 publish: true
 ---
+
 # pptx 파일 구조
 
 PPTX 파일은 Microsoft Office Open XML(OOXML) 형식을 따르며, 실제로는 여러 개의 XML 파일과 이미지, 미디어 파일들이 폴더 구조로 저장된 후 ZIP으로 압축된 형태이다.
@@ -12,17 +15,18 @@ PPTX 파일은 Microsoft Office Open XML(OOXML) 형식을 따르며, 실제로�
 [pptx example - Dickinson_Sample_Slides](https://www.dickinson.edu/downloads/download/520/sample_powerpoint_slides)
 
 ## 최상위 구조
+
 압축을 풀었을 때 나타나는 주요 폴더와 파일은 다음과 같다.
 
 - **`[Content_Types].xml`**: <mark style="background:#d4b106">파일 내에 포함된 모든 콘텐츠 종류(MIME 타입)를 정의</mark>. 어떤 XML이 슬라이드인지, 어떤 파일이 이미지인지 등을 명시.
 - **`_rels/`**:<mark style="background:#d4b106"> 파일 간의 관계를 정의</mark>하는 `.rels` 파일이 들어있다.
 - **`docProps/`**: 문서의 <mark style="background:#d4b106">속성 정보</mark>.
-    - `core.xml`: 작성자, 수정일, 제목 등 기본 메타데이터.
-    - `app.xml`: 슬라이드 개수, 단어 수, 프로그램 버전 등 통계 정보.
+  - `core.xml`: 작성자, 수정일, 제목 등 기본 메타데이터.
+  - `app.xml`: 슬라이드 개수, 단어 수, 프로그램 버전 등 통계 정보.
 - **`ppt/`**: 프레임워크의 <mark style="background:#d4b106">핵심 데이터가 들어있는 가장 중요한 폴더.</mark>
 
-
 ### 예시
+
 <div style="text-align: center;">
 	<p>파일 확장자 변경</p>
 	<img src="./_assets/Pasted image 20260214173538.png" style="max-width: 30%; height: auto;">
@@ -45,7 +49,8 @@ PPTX 파일은 Microsoft Office Open XML(OOXML) 형식을 따르며, 실제로�
 </div>
 
 #### 전체 파일 구조
-``` bash
+
+```bash
 lis@lis-M5-PLUS:~/Downloads/Dickinson_Sample_Slides$ tree
 .
 ├── [Content_Types].xml
@@ -139,6 +144,7 @@ lis@lis-M5-PLUS:~/Downloads/Dickinson_Sample_Slides$ tree
 ```
 
 ## \[Content_Types].xml - 파일 타입
+
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -221,28 +227,29 @@ lis@lis-M5-PLUS:~/Downloads/Dickinson_Sample_Slides$ tree
 ```
 
 - **`<Default>` (확장자 기준)**: "이 패키지 안에서 특정 확장자를 가진 파일들은 모두 이런 형식이다"라고 선언한다.
-    - `Default Extension="png" ContentType="image/png"`: `.png` 파일은 이미지임을 알림.
-    - `Default Extension="xml" ContentType="application/xml"`: 일반적인 `.xml` 파일들.
+  - `Default Extension="png" ContentType="image/png"`: `.png` 파일은 이미지임을 알림.
+  - `Default Extension="xml" ContentType="application/xml"`: 일반적인 `.xml` 파일들.
 - **`<Override>` (특정 파일 기준)**: "이 특정 경로의 파일은 아주 특별한 역할을 한다"라고 명시한다.
-    - `PartName="/ppt/presentation.xml"` → `presentation.main+xml`: 이 파일이 프레젠테이션의 메인 뼈대임을 지칭.
-    - `PartName="/ppt/slides/slide1.xml"` → `presentationml.slide+xml`: 이 파일이 1번 슬라이드임을 지칭.
+  - `PartName="/ppt/presentation.xml"` → `presentation.main+xml`: 이 파일이 프레젠테이션의 메인 뼈대임을 지칭.
+  - `PartName="/ppt/slides/slide1.xml"` → `presentationml.slide+xml`: 이 파일이 1번 슬라이드임을 지칭.
 
-=> <mark style="background:#d4b106">즉, \[Content_Types].xml는 Office Open XML(OOXML) 표준에서 가장 먼저 읽히는 파일 중 하나</mark>로, 
-- 파일 인식(<mark style="background:#d4b106">명부에 등록되어 있는 타입대로 파일을 인식</mark>), 
-- 보안 및 무결성(명부에 없는 파일이 패키지에 포함되어 있다면, 프로그램은 이를 무시하거나 손상된 파일로 간주)에 이용된다. 
+=> <mark style="background:#d4b106">즉, \[Content_Types].xml는 Office Open XML(OOXML) 표준에서 가장 먼저 읽히는 파일 중 하나</mark>로,
 
-## _rels/ - 관계 정의 (Relationships)
+- 파일 인식(<mark style="background:#d4b106">명부에 등록되어 있는 타입대로 파일을 인식</mark>),
+- 보안 및 무결성(명부에 없는 파일이 패키지에 포함되어 있다면, 프로그램은 이를 무시하거나 손상된 파일로 간주)에 이용된다.
+
+## \_rels/ - 관계 정의 (Relationships)
 
 PPTX 내의 파일들은 서로 독립적으로 존재하는 것이 아니라, **Relationship(.rels)** 파일을 통해 유기적으로 연결된다. 최상위의 `_rels/` 폴더는 이 전체 패키지의 **'연결 지도'** 역할을 한다.
 
 - **루트 `.rels` 파일 (`/_rels/.rels`)**:
-    - PPTX 파일을 열었을 때 가장 먼저 참조되는 파일이다.
-    - "이 파일의 메인 콘텐츠는 `/ppt/presentation.xml`에 있고, 메타데이터는 `/docProps/core.xml`에 있다"와 같이 **전체적인 시작 경로**를 정의한다.
-    - 이 파일이 없거나 손상되면 프로그램은 어디서부터 데이터를 읽어야 할지 알 수 없게 된다.
+  - PPTX 파일을 열었을 때 가장 먼저 참조되는 파일이다.
+  - "이 파일의 메인 콘텐츠는 `/ppt/presentation.xml`에 있고, 메타데이터는 `/docProps/core.xml`에 있다"와 같이 **전체적인 시작 경로**를 정의한다.
+  - 이 파일이 없거나 손상되면 프로그램은 어디서부터 데이터를 읽어야 할지 알 수 없게 된다.
 - **계층적 관계 구조**:
-    - 루트뿐만 아니라 <mark style="background:#d4b106">각 주요 폴더마다 `_rels` 폴더가 존재</mark>할 수 있다.
-    - **개별 요소의 연결**: 예를 들어 `ppt/slides/_rels/slide1.xml.rels`는 `slide1.xml`이 사용하는 이미지, 레이아웃, 차트 등이 어디에 위치하는지 구체적인 경로를 연결해 준다.
-    - **ID 기반 참조**: XML 본문에서는 복잡한 파일 경로 대신 `rId1` 같은 짧은 ID만 사용하고, 실제 경로는 대응하는 `.rels` 파일에서 관리함으로써 구조를 유연하게 유지한다.
+  - 루트뿐만 아니라 <mark style="background:#d4b106">각 주요 폴더마다 `_rels` 폴더가 존재</mark>할 수 있다.
+  - **개별 요소의 연결**: 예를 들어 `ppt/slides/_rels/slide1.xml.rels`는 `slide1.xml`이 사용하는 이미지, 레이아웃, 차트 등이 어디에 위치하는지 구체적인 경로를 연결해 준다.
+  - **ID 기반 참조**: XML 본문에서는 복잡한 파일 경로 대신 `rId1` 같은 짧은 ID만 사용하고, 실제 경로는 대응하는 `.rels` 파일에서 관리함으로써 구조를 유연하게 유지한다.
 
 ## docProps/ - 문서 속성 정보 (Metadata)
 
@@ -251,32 +258,35 @@ PPTX 내의 파일들은 서로 독립적으로 존재하는 것이 아니라, 
 - **`core.xml` (기본 메타데이터)**: 작성자, 생성/수정 날짜, 제목 등 문서의 기본적인 신원 정보를 담고 있다. Dublin Core 표준 형식을 사용하여 외부 프로그램과의 호환성이 높다.
 - **`app.xml` (통계 정보)**: 슬라이드 개수, 숨겨진 슬라이드 수, 사용된 단어 수, 프로그램 버전 등 구체적인 통계 수치를 포함한다. 특히 슬라이드 제목 목록(`TitlesOfParts`)이 들어 있어 전체 목차를 빠르게 파악할 수 있다.
 - **`custom.xml` (사용자 지정 속성)**: 사용자가 직접 추가한 속성(예: 프로젝트 ID, 보안 등급 등)이 있을 경우에만 생성되며, 임의의 메타데이터를 저장한다.
+
 ## /ppt - 실제 내용
 
 프레젠테이션의 <mark style="background:#d4b106"><mark style="background:#ff4d4f">실제 내용(Content),</mark> 구조(Structure), 디자인(Design)</mark>이 이 폴더에 집중되어 있다. `/ppt` 폴더의 내용은 크게 네 가지 범주로 나누어 볼 수 있다.
+
 ### 1. 핵심 구조 및 설정 파일
 
 프레젠테이션의 전체적인 틀과 동작 방식을 결정하는 파일들이다.
 
 - **`presentation.xml`**: 프레젠테이션의 <mark style="background:#d4b106">**'지도'** 역할</mark>을 하는 가장 중요한 파일.
-    - 슬라이드의 목록과 순서(`<p:sldIdLst>`)를 정의한다.
-    - 슬라이드 크기(4:3, 16:9 등)와 기본 텍스트 스타일 정보를 포함한다.
+  - 슬라이드의 목록과 순서(`<p:sldIdLst>`)를 정의한다.
+  - 슬라이드 크기(4:3, 16:9 등)와 기본 텍스트 스타일 정보를 포함한다.
 - **`presProps.xml`**: 프레젠테이션의 <mark style="background:#d4b106">**전역적인 동작 설정**</mark>을 담당한다.
-    - 슬라이드 쇼 설정(반복 여부, 나레이션 포함 등)과 인쇄 관련 옵션을 저장한다.
-    - 파일의 보안 상태나 편집 제한 여부 등의 속성을 포함한다.
+  - 슬라이드 쇼 설정(반복 여부, 나레이션 포함 등)과 인쇄 관련 옵션을 저장한다.
+  - 파일의 보안 상태나 편집 제한 여부 등의 속성을 포함한다.
 - **`viewProps.xml`**: 사용자가 파일을 열었을 때의 **화면 구성**을 결정한다. <mark style="background:#d4b106">(편집기 보기 설정)</mark>
-    - 마지막으로 편집하던 슬라이드 위치와 화면 확대/축소 비율(Zoom)을 기억한다.
-    - 편집 화면의 안내선(Guides) 위치나 보기 모드(기본, 슬라이드 분류기 등)를 정의한다.
+  - 마지막으로 편집하던 슬라이드 위치와 화면 확대/축소 비율(Zoom)을 기억한다.
+  - 편집 화면의 안내선(Guides) 위치나 보기 모드(기본, 슬라이드 분류기 등)를 정의한다.
 - **`tableStyles.xml`**: 문서 내에서 공통으로 사용하는 <mark style="background:#d4b106">**표의 디자인**</mark>을 관리한다.
-    - 표의 테마 색상, 테두리 두께, 강조 행/열 등 스타일 정의를 담고 있다.
+  - 표의 테마 색상, 테두리 두께, 강조 행/열 등 스타일 정의를 담고 있다.
+
 ### 2. 콘텐츠 및 디자인 계층 (상속 구조)
 
 <mark style="background:#d4b106">PPTX는 **Master -> Layout -> Slide** 순으로 디자인과 설정을 상속받는 구조</mark>를 가진다.
 
 - **`slides/`**: <mark style="background:#ff4d4f">실제 슬라이드 콘텐츠가 담긴 폴더.</mark>
-    - `slideX.xml`: 각 슬라이드의 텍스트, 도형, 표의 위치와 속성이 정의된다.
-	    - => [[slideX.xml 구조]]
-    - 텍스트 데이터는 주로 `<a:t>` 태그 내에 계층적으로 저장된다.
+  - `slideX.xml`: 각 슬라이드의 텍스트, 도형, 표의 위치와 속성이 정의된다.
+    - => [[slideX.xml 구조]]
+  - 텍스트 데이터는 주로 `<a:t>` 태그 내에 계층적으로 저장된다.
 - **`slideLayouts/`**: 슬라이드에 적용된 레이아웃(제목형, 2단 구성 등) 정보가 들어있다.
 - **`slideMasters/`**: 전체 디자인의 근간이 되는 마스터 슬라이드 정보. 배경, 로고, 기본 폰트 등을 관리한다.
 - **`theme/`**: 문서 전체의 색상 팔레트(Color), 글꼴 세트(Font), 그래픽 효과(Format)를 정의한다.
