@@ -154,6 +154,8 @@ export function resolveExcalidrawImagePaths(
     const target = normalizeWikilinkTarget(rawTarget)
     const directCandidates = [
       path.posix.normalize(path.posix.join(drawingDirectory, target)),
+      path.posix.normalize(path.posix.join(drawingDirectory, "_assets", target)),
+      path.posix.normalize(path.posix.join(drawingDirectory, "assets", target)),
       path.posix.normalize(target),
     ]
     const direct = directCandidates.find((candidate) => allFileNames.has(candidate))

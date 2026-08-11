@@ -69,6 +69,20 @@ test("resolves embedded images relative to the drawing", () => {
   )
 })
 
+test("prefers an adjacent assets directory before basename fallback", () => {
+  const parsed = parseExcalidrawMarkdown(drawingMarkdown())
+  assert.ok(parsed)
+
+  assert.deepEqual(
+    resolveExcalidrawImagePaths(parsed, "notes/drawing.md", [
+      "notes/drawing.md",
+      "notes/_assets/image.png",
+      "archive/_assets/image.png",
+    ]),
+    { abc123: "notes/_assets/image.png" },
+  )
+})
+
 test("preserves the theme authored in Excalidraw", () => {
   const parsed = parseExcalidrawMarkdown(drawingMarkdown())
   assert.ok(parsed)
